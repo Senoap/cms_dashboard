@@ -1,7 +1,6 @@
 package com.example.cmsbackend.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CollectionId;
 
 @Entity
 @Table(name = "tbl_barang")
