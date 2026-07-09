@@ -9,7 +9,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState(''); // State untuk Search Bar
 
   useEffect(() => {
-    axios.get('http://localhost:8081/api/posts')
+    axios.get(`${API_BASE_URL}/api/posts`)
       .then(res => setPosts(res.data))
       .catch(err => console.error(err));
   }, []);

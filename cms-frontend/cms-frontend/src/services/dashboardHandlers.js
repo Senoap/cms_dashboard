@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { barangService } from './barangService';
 import { formatSecureInvoiceNumber } from '../utils/securityHelper';
+import API_BASE_URL from './api';
 
 export const dashboardHandlers = {
     // 🍏 1. Handler Content (Artikel)
@@ -9,9 +10,9 @@ export const dashboardHandlers = {
         const postData = { title, slug, content, status };
         try {
             if (isEditing) {
-                await axios.put(`http://localhost:8081/api/posts/${editId}`, postData);
+                await axios.put(`${API_BASE_URL}/api/posts/${editId}`, postData);
             } else {
-                await axios.post('http://localhost:8081/api/posts', postData);
+                await axios.post(`${API_BASE_URL}/api/posts`, postData);
             }
             clearForm();
             if (fetchPosts) fetchPosts();
@@ -35,7 +36,7 @@ export const dashboardHandlers = {
     handleContentDelete: async (id, { fetchPosts }) => {
         if (window.confirm("Hapus artikel ini?")) {
             try {
-                await axios.delete(`http://localhost:8081/api/posts/${id}`);
+                await axios.delete(`${API_BASE_URL}/api/posts/${id}`);
                 if (fetchPosts) fetchPosts();
             } catch (error) {
                 console.error(error);
@@ -100,7 +101,7 @@ export const dashboardHandlers = {
 
         try {
             // 2. Tembak data ke API Backend Java Spring Boot
-            await axios.post('http://localhost:8081/api/order', orderPayload);
+            await axios.post(`${API_BASE_URL}/api/order`, orderPayload);
 
             alert("💥 Jrettt! Transaksi Multi-Barang sukses disimpan ke Cloud Database!");
 
@@ -135,7 +136,7 @@ export const dashboardHandlers = {
         };
 
         try {
-            const response = await axios.post('http://localhost:8081/api/invoice', invoiceDataKeBackend);
+            const response = await axios.post(`${API_BASE_URL}/api/invoice`, invoiceDataKeBackend);
             alert(`Jrettt! Invoice ${generatedInvoiceNumber} berhasil diterbitkan!`);
 
             if (setInvoices && invoices) {

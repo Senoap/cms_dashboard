@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios'; // 🍏 Sudah dipastikan 'axios' bukan 'ajax'
 import '../css/Dashboard.css';
 import logoImg from '../assets/pl_img.jpeg';
+import API_BASE_URL from '../services/api';
 
 // Import Komponen Sub-Menu
 import ManageContent from '../components/ManageContent';
@@ -65,10 +66,10 @@ function Dashboard() {
   });
 
   // Fetch Data Awal saat Load Page dari Database Spring Boot
-  const fetchPosts = async () => { try { const res = await axios.get('http://localhost:8081/api/posts'); setPosts(res.data); } catch (e) { console.error(e); } };
+  const fetchPosts = async () => { try { const res = await axios.get(`${API_BASE_URL}/api/posts`); setPosts(res.data); } catch (e) { console.error(e); } };
   const fetchBarang = async () => { try { const data = await barangService.getAll(); setBarangList(data); } catch (e) { console.error(e); } };
-  const fetchOrders = async () => { try { const res = await axios.get('http://localhost:8081/api/order'); setOrders(res.data); } catch (e) { console.error(e); } };
-  const fetchInvoices = async () => { try { const res = await axios.get('http://localhost:8081/api/invoice'); setInvoices(res.data); } catch (e) { console.error(e); } };
+  const fetchOrders = async () => { try { const res = await axios.get(`${API_BASE_URL}/api/order`); setOrders(res.data); } catch (e) { console.error(e); } };
+  const fetchInvoices = async () => { try { const res = await axios.get(`${API_BASE_URL}/api/invoice`); setInvoices(res.data); } catch (e) { console.error(e); } };
 
   useEffect(() => { fetchPosts(); fetchBarang(); fetchOrders(); fetchInvoices(); }, []);
 

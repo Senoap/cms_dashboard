@@ -16,7 +16,7 @@
     border-right: 2px solid #d4af37;
     display: flex;
     flex-direction: column;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar-header {
@@ -81,7 +81,8 @@
     transition: all 0.2s;
 }
 
-.submenu-item:hover, .submenu-item.active {
+.submenu-item:hover,
+.submenu-item.active {
     color: #d4af37;
     background-color: #202020;
     padding-left: 40px;
@@ -128,69 +129,72 @@
     border: 1px solid #2d2d2d;
     border-radius: 8px;
     padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* ==========================================================================
    APPLE TOGGLE SWITCH STYLE
    ========================================================================== */
 .theme-switch-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  border-bottom: 1px solid #2d2d2d;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-bottom: 1px solid #2d2d2d;
 }
 
 .theme-switch-wrapper span {
-  font-size: 12px;
-  font-weight: bold;
-  color: #888;
+    font-size: 12px;
+    font-weight: bold;
+    color: #888;
 }
 
 .theme-switch {
-  display: inline-block;
-  height: 26px;
-  position: relative;
-  width: 50px;
+    display: inline-block;
+    height: 26px;
+    position: relative;
+    width: 50px;
 }
 
 .theme-switch input {
-  display: none;
+    display: none;
 }
 
 .slider {
-  background-color: #444; /* Warna pas off (Dark) */
-  bottom: 0;
-  cursor: pointer;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: .4s;
-  border-radius: 34px;
+    background-color: #444;
+    /* Warna pas off (Dark) */
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
 }
 
 .slider:before {
-  background-color: #fff;
-  bottom: 3px;
-  content: "";
-  height: 20px;
-  left: 3px;
-  position: absolute;
-  transition: .4s;
-  width: 20px;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    background-color: #fff;
+    bottom: 3px;
+    content: "";
+    height: 20px;
+    left: 3px;
+    position: absolute;
+    transition: .4s;
+    width: 20px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Pas di-klik / Aktif Light Mode */
-input:checked + .slider {
-  background-color: #34c759; /* Hijau khas Apple Switch */
+input:checked+.slider {
+    background-color: #34c759;
+    /* Hijau khas Apple Switch */
 }
 
-input:checked + .slider:before {
-  transform: translateX(24px); /* Geser buletannya */
+input:checked+.slider:before {
+    transform: translateX(24px);
+    /* Geser buletannya */
 }
 
 
@@ -198,7 +202,8 @@ input:checked + .slider:before {
    LIGHT MODE OVERRIDE STYLES (PUTIH - EMAS PREMIUM)
    ========================================================================== */
 .light-theme {
-    background-color: #f5f5f7; /* Abu-abu super terang khas Apple */
+    background-color: #f5f5f7;
+    /* Abu-abu super terang khas Apple */
     color: #1d1d1f;
 }
 
@@ -210,7 +215,7 @@ input:checked + .slider:before {
 .light-theme .admin-sidebar {
     background-color: #ffffff;
     border-right: 2px solid #d4af37;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .light-theme .sidebar-header {
@@ -220,6 +225,7 @@ input:checked + .slider:before {
 .light-theme .menu-item {
     color: #1d1d1f;
 }
+
 .light-theme .menu-item:hover {
     background-color: #f5f5f7;
 }
@@ -227,10 +233,12 @@ input:checked + .slider:before {
 .light-theme .submenu-list {
     background-color: #fafafa;
 }
+
 .light-theme .submenu-item {
     color: #515154;
 }
-.light-theme .submenu-item:hover, 
+
+.light-theme .submenu-item:hover,
 .light-theme .submenu-item.active {
     background-color: #f0f0f2;
 }
@@ -238,6 +246,7 @@ input:checked + .slider:before {
 .light-theme .sidebar-footer {
     border-top: 1px solid #e5e5e7;
 }
+
 .light-theme .link-back {
     color: #515154;
 }
@@ -252,7 +261,7 @@ input:checked + .slider:before {
 .light-theme .crud-table {
     background-color: #ffffff;
     border: 1px solid #e5e5e7;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
 .light-theme .table-section h3 {
@@ -263,15 +272,16 @@ input:checked + .slider:before {
     color: #515154;
 }
 
-.light-theme .form-group input, 
-.light-theme .form-group textarea, 
+.light-theme .form-group input,
+.light-theme .form-group textarea,
 .light-theme .form-group select {
     background-color: #ffffff;
     border: 1px solid #d2d2d7;
     color: #1d1d1f;
 }
-.light-theme .form-group input:focus, 
-.light-theme .form-group textarea:focus, 
+
+.light-theme .form-group input:focus,
+.light-theme .form-group textarea:focus,
 .light-theme .form-group select:focus {
     border-color: #d4af37;
 }
@@ -282,12 +292,15 @@ input:checked + .slider:before {
     color: #d4af37;
     border-bottom: 2px solid #e5e5e7;
 }
+
 .light-theme .crud-table tr {
     border-bottom: 1px solid #e5e5e7;
 }
+
 .light-theme .crud-table tr:hover {
     background-color: #fafafa;
 }
+
 .light-theme .theme-switch-wrapper span {
     color: #515154;
 }
@@ -298,11 +311,13 @@ input:checked + .slider:before {
 .form-container-premium {
     background-color: #1e1e1e;
     border: 1px solid #2d2d2d;
-    border-radius: 12px; /* Bikin sudut melengkung halus ala iOS/Modern Web */
+    border-radius: 12px;
+    /* Bikin sudut melengkung halus ala iOS/Modern Web */
     padding: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     max-width: 850px;
-    margin: 0 auto; /* Bikin form berada di tengah halaman kanan */
+    margin: 0 auto;
+    /* Bikin form berada di tengah halaman kanan */
     transition: background-color 0.3s, border-color 0.3s;
 }
 
@@ -344,23 +359,24 @@ input:checked + .slider:before {
     letter-spacing: 0.3px;
 }
 
-.form-group-premium input, 
-.form-group-premium textarea, 
+.form-group-premium input,
+.form-group-premium textarea,
 .form-group-premium select {
     width: 100%;
     padding: 14px 16px;
     box-sizing: border-box;
     background-color: #121212;
     border: 1px solid #3a3a3a;
-    border-radius: 8px; /* Input tidak kaku boxy */
+    border-radius: 8px;
+    /* Input tidak kaku boxy */
     font-size: 15px;
     color: #fff;
     transition: all 0.2s ease-in-out;
 }
 
 /* Efek fokus pas admin klik input */
-.form-group-premium input:focus, 
-.form-group-premium textarea:focus, 
+.form-group-premium input:focus,
+.form-group-premium textarea:focus,
 .form-group-premium select:focus {
     border-color: #d4af37;
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
@@ -425,36 +441,44 @@ input:checked + .slider:before {
     background-color: #ffffff;
     border-color: #e5e5e7;
 }
+
 .light-theme .form-header-premium {
     border-bottom-color: #e5e5e7;
 }
+
 .light-theme .form-header-premium p {
     color: #6e6e73;
 }
+
 .light-theme .form-group-premium label {
     color: #1d1d1f;
 }
-.light-theme .form-group-premium input, 
-.light-theme .form-group-premium textarea, 
+
+.light-theme .form-group-premium input,
+.light-theme .form-group-premium textarea,
 .light-theme .form-group-premium select {
     background-color: #f5f5f7;
     border-color: #d2d2d7;
     color: #1d1d1f;
 }
-.light-theme .form-group-premium input:focus, 
-.light-theme .form-group-premium textarea:focus, 
+
+.light-theme .form-group-premium input:focus,
+.light-theme .form-group-premium textarea:focus,
 .light-theme .form-group-premium select:focus {
     background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
 }
+
 .light-theme .input-slug-premium {
     background-color: #fafafa !important;
     color: #86868b !important;
 }
+
 .light-theme .btn-cancel-premium {
     background-color: #e5e5e7;
     color: #1d1d1f;
 }
+
 .light-theme .btn-cancel-premium:hover {
     background-color: #d2d2d7;
 }
@@ -465,7 +489,8 @@ input:checked + .slider:before {
 .table-container-premium {
     background-color: #1e1e1e;
     border: 1px solid #2d2d2d;
-    border-radius: 12px; /* Melengkung halus seirama dengan Form */
+    border-radius: 12px;
+    /* Melengkung halus seirama dengan Form */
     padding: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     max-width: 1000px;
@@ -500,7 +525,8 @@ input:checked + .slider:before {
 .crud-table-premium {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0; /* Biar radius sudut tabel luar gak hancur */
+    border-spacing: 0;
+    /* Biar radius sudut tabel luar gak hancur */
     text-align: left;
 }
 
@@ -515,8 +541,13 @@ input:checked + .slider:before {
 }
 
 /* Bikin radius di pojok-pojok header tabel */
-.crud-table-premium th:first-child { border-top-left-radius: 8px; }
-.crud-table-premium th:last-child { border-top-right-radius: 8px; }
+.crud-table-premium th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.crud-table-premium th:last-child {
+    border-top-right-radius: 8px;
+}
 
 .crud-table-premium td {
     padding: 16px;
@@ -527,7 +558,8 @@ input:checked + .slider:before {
 }
 
 .crud-table-premium tr:last-child td {
-    border-bottom: none; /* Hilangkan garis di baris paling bawah */
+    border-bottom: none;
+    /* Hilangkan garis di baris paling bawah */
 }
 
 /* Efek hover baris yang smooth */
@@ -555,7 +587,8 @@ input:checked + .slider:before {
 .badge-status-premium {
     display: inline-block;
     padding: 6px 12px;
-    border-radius: 20px; /* Badges kapsul ala Apple */
+    border-radius: 20px;
+    /* Badges kapsul ala Apple */
     font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
@@ -563,13 +596,15 @@ input:checked + .slider:before {
 }
 
 .badge-published-premium {
-    background-color: rgba(52, 199, 89, 0.15); /* Hijau Apple Transparan */
+    background-color: rgba(52, 199, 89, 0.15);
+    /* Hijau Apple Transparan */
     color: #34c759;
     border: 1px solid rgba(52, 199, 89, 0.3);
 }
 
 .badge-draft-premium {
-    background-color: rgba(255, 159, 10, 0.15); /* Orange Apple Transparan */
+    background-color: rgba(255, 159, 10, 0.15);
+    /* Orange Apple Transparan */
     color: #ff9f0a;
     border: 1px solid rgba(255, 159, 10, 0.3);
 }
@@ -592,6 +627,7 @@ input:checked + .slider:before {
     font-size: 13px;
     transition: all 0.2s;
 }
+
 .btn-action-edit:hover {
     background-color: #3498db;
     color: white;
@@ -609,6 +645,7 @@ input:checked + .slider:before {
     font-size: 13px;
     transition: all 0.2s;
 }
+
 .btn-action-delete:hover {
     background-color: #e74c3c;
     color: white;
@@ -620,23 +657,29 @@ input:checked + .slider:before {
     background-color: #ffffff;
     border-color: #e5e5e7;
 }
+
 .light-theme .table-header-premium {
     border-bottom-color: #e5e5e7;
 }
+
 .light-theme .table-header-premium p {
     color: #6e6e73;
 }
+
 .light-theme .crud-table-premium th {
     background-color: #f5f5f7;
     border-bottom-color: #e5e5e7;
 }
+
 .light-theme .crud-table-premium td {
     color: #1d1d1f;
     border-bottom-color: #e5e5e7;
 }
+
 .light-theme .crud-table-premium tr:hover td {
     background-color: #f5f5f7;
 }
+
 .light-theme .code-slug-premium {
     background-color: #f5f5f7;
     border-color: #e5e5e7;
@@ -659,11 +702,13 @@ input:checked + .slider:before {
 
 /* Kertas Invoice Simulasi di Layar */
 .invoice-paper {
-    background-color: #ffffff !important; /* Wajib putih bersih */
-    color: #1d1d1f !important; /* Teks wajib hitam pekat */
+    background-color: #ffffff !important;
+    /* Wajib putih bersih */
+    color: #1d1d1f !important;
+    /* Teks wajib hitam pekat */
     border-radius: 8px;
     padding: 50px;
-    box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
     font-family: 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.5;
 }
@@ -676,7 +721,8 @@ input:checked + .slider:before {
 
 .company-info h2 {
     margin: 0 0 5px 0;
-    color: #aa8416 !important; /* Emas Pinarak Langgeng */
+    color: #aa8416 !important;
+    /* Emas Pinarak Langgeng */
     font-size: 26px;
     letter-spacing: 1px;
 }
@@ -721,7 +767,9 @@ input:checked + .slider:before {
     margin-bottom: 40px;
 }
 
-.bill-to h4, .event-details h4, .notes h4 {
+.bill-to h4,
+.event-details h4,
+.notes h4 {
     margin: 0 0 10px 0;
     color: #86868b;
     font-size: 13px;
@@ -734,7 +782,8 @@ input:checked + .slider:before {
     font-size: 18px;
 }
 
-.bill-to p, .event-details p {
+.bill-to p,
+.event-details p {
     margin: 0 0 6px 0;
     font-size: 14px;
 }
@@ -784,6 +833,7 @@ input:checked + .slider:before {
    CSS MAGIC TRICK FOR PRINTING (Pemicu Ctrl+P)
    ========================================================================== */
 @media print {
+
     /* Sembunyikan seluruh sidebar admin, header kontrol, dan elemen dashboard luar */
     .admin-sidebar,
     .invoice-control-buttons,
@@ -795,7 +845,8 @@ input:checked + .slider:before {
     }
 
     /* Paksa container mengabaikan scroll grid dashboard */
-    .admin-container, .admin-content {
+    .admin-container,
+    .admin-content {
         display: block !important;
         padding: 0 !important;
         background-color: #ffffff !important;
@@ -810,5 +861,89 @@ input:checked + .slider:before {
         padding: 0 !important;
         box-shadow: none !important;
         border: none !important;
+    }
+
+    /* =========================================================
+   🍏 JURUS SAKTI RESPONSIVE DESIGN FIX - KHUSUS HP (max-width: 768px)
+   ========================================================= */
+    /* =========================================================
+   🍏 JURUS PAMUNGKAS FIX RESPONSIVE HP (max-width: 768px)
+   ========================================================= */
+    @media screen and (max-width: 768px) {
+
+        /* 1. Paksa Container Utama Jadi Flex Kolom Atas-Bawah */
+        html,
+        body,
+        .admin-container {
+            display: flex !important;
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* 2. Ubah Sidebar Kiri Jadi Bar Horizontal di Atas */
+        .admin-container .admin-sidebar {
+            width: 100% !important;
+            height: auto !important;
+            position: relative !important;
+            left: 0 !important;
+            top: 0 !important;
+            padding: 15px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Rapikan susunan menu di dalam sidebar biar gak mencong */
+        .admin-sidebar .sidebar-menu {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            width: 100% !important;
+            padding: 0 !important;
+        }
+
+        /* 3. Paksa Konten Kanan Turun ke Bawah (Full Layar HP) */
+        .admin-container .admin-content {
+            width: 100% !important;
+            margin-left: 0 !important;
+            /* Hapus margin kiri bawaan laptop */
+            padding: 15px !important;
+            box-sizing: border-box !important;
+            display: block !important;
+            overflow-x: hidden !important;
+            /* Biar layar gak bisa geser kanan-kiri */
+        }
+
+        /* 4. Amankan Grid Input, Form, dan Card biar sejajar ke bawah */
+        .admin-content .form-container,
+        .admin-content .card,
+        .admin-content .manage-content-wrapper {
+            width: 100% !important;
+            max-width: 100% !important;
+            display: block !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Paksa semua CSS Grid hancur jadi satu baris vertikal */
+        .admin-content .form-group,
+        .admin-content .grid-container,
+        .admin-content .order-form-grid {
+            grid-template-columns: 1fr !important;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 100% !important;
+        }
+
+        /* 5. Bungkus tabel biar gak bikin layout jebol kesamping */
+        .admin-content .table-responsive,
+        .admin-content table {
+            display: block !important;
+            width: 100% !important;
+            overflow-x: auto !important;
+            white-space: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+        }
     }
 }
