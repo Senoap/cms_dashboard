@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-function ManageOrder({ 
-  orders, barangList, onOrderSubmit, selectedBarangId, setSelectedBarangId, 
-  jumlah, setJumlah, tanggalPesan, setTanggalPesan, tanggalAcara, setTanggalAcara, 
-  pemesan, setPemesan, noHpPemesan, setNoHpPemesan, activeTab 
+function ManageOrder({
+  orders, barangList, onOrderSubmit, selectedBarangId, setSelectedBarangId,
+  jumlah, setJumlah, tanggalPesan, setTanggalPesan, tanggalAcara, setTanggalAcara,
+  pemesan, setPemesan, noHpPemesan, setNoHpPemesan, activeTab, setSelectedOrder, setActiveTab
 }) {
 
   // 🍏 STATE LOKAL: Buat nampung keranjang belanja sementara sebelum di-submit
@@ -61,7 +61,7 @@ function ManageOrder({
           <h3>📦 Buat Transaksi Order Baru</h3>
           <p>Catat pesanan pelanggan baru dengan memilih beberapa jenis barang sekaligus.</p>
         </div>
-        
+
         {/* FORM BODY */}
         <div className="form-body-premium">
           {/* AREA 1: INPUT BARANG & QUANTITY */}
@@ -81,10 +81,10 @@ function ManageOrder({
           </div>
 
           {/* Tombol Masuk Keranjang */}
-          <button 
-            type="button" 
-            onClick={handleAddToCart} 
-            className="btn-submit-premium" 
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="btn-submit-premium"
             style={{ backgroundColor: '#4f46e5', marginBottom: '25px', width: 'auto', display: 'inline-block' }}
           >
             ➕ Masukkan ke Keranjang
@@ -170,31 +170,51 @@ function ManageOrder({
           <h3>📋 Daftar Transaksi Masuk</h3>
           <p>Seluruh riwayat pesanan pelanggan yang masuk ke Pinarak Langgeng.</p>
         </div>
-        
+
         <div className="table-responsive-premium">
           <table className="crud-table-premium">
             <thead>
               <tr>
-                <th>ID Order</th>
+                {/* <th>ID Order</th> */}
                 <th>Nama Pemesan</th>
                 <th>Daftar Rincian Barang / Qty</th>
                 <th>Grand Total</th>
                 <th>Tgl Pesan</th>
                 <th>Tgl Acara</th>
                 <th>No HP / WA</th>
+                {/* <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedOrder(orderItem);    // 1. Simpan data baris ini ke state selectedOrder
+                    setIsOrderModalOpen(true);     // 2. Langsung tembak buka popup modal!
+                  }}
+                  className="btn-action-view"
+                >
+                  👁️ Lihat Detail
+                </button> */}
               </tr>
             </thead>
             <tbody>
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
-                    📭 Belum ada transaksi order masuk.
+                  <td style={{ textAlign: 'center' }}>
+                    {/* <button
+                      onClick={() => {
+                        setSelectedOrder(orderItem);  // Menyimpan data baris orderan tersebut
+                        setActiveTab('detail-order'); // Mengubah tab aktif untuk memunculkan Form Detail
+                      }}
+                      className="btn-action-view"
+                    >
+                      👁️ Lihat Detail
+                    </button> */}
+
+                    {/* Tombol Hapus/Edit bawaan lama lu */}
                   </td>
                 </tr>
               ) : (
                 orders.map(ord => (
                   <tr key={ord.id}>
-                    <td><span className="text-id-premium">#{ord.id}</span></td>
+                    {/* <td><span className="text-id-premium">#{ord.id}</span></td> */}
                     <td><strong>{ord.pemesan}</strong></td>
                     {/* 🍏 SINKRONISASI LIST: Looping array details dari backend */}
                     <td>

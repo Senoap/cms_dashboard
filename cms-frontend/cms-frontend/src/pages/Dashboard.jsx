@@ -10,11 +10,13 @@ import ManageContent from '../components/ManageContent';
 import ManageInventory from '../components/ManageInventory';
 import ManageOrder from '../components/ManageOrder';
 import ManageInvoice from '../components/ManageInvoice';
+import OrderDetail from '../components/OrderDetail';
 
 // Import Service, Handlers, dan Modal Popup
 import { barangService } from '../services/barangService';
 import { dashboardHandlers } from '../services/dashboardHandlers';
 import EditBarangModal from '../components/EditBarangModal';
+import OrderDetailModal from '../components/OrderDetailModal';
 
 function Dashboard() {
   const [openMenu, setOpenMenu] = useState('content');
@@ -47,11 +49,13 @@ function Dashboard() {
   const [tanggalAcara, setTanggalAcara] = useState('');
   const [pemesan, setPemesan] = useState('');
   const [noHpPemesan, setNoHpPemesan] = useState('');
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   // State Invoice
   const [invoices, setInvoices] = useState([]);
-  const [selectedOrderId, setSelectedOrderId] = useState('');
   const [tanggalInvoice, setTanggalInvoice] = useState('');
+  const [selectedOrderId, setSelectedOrderId] = useState('');
   const [templateConfig, setTemplateConfig] = useState({
     companyName: 'PINARAK LANGGENG',
     companySlogan: 'Solusi Penyewaan Alat Pesta & Event Terbaik',
@@ -84,16 +88,55 @@ function Dashboard() {
 
   const handleAddBarang = (e) => dashboardHandlers.handleAddBarang(e, { newNamaBarang, hargaBarang, setNewNamaBarang, setHargaBarang, fetchBarang, setActiveTab });
   const handleDeleteBarang = (id) => dashboardHandlers.handleDeleteBarang(id, { fetchBarang });
-  
+
   // Memastikan fetchOrders dikirim agar form order langsung refresh list tabel
   const handleOrderSubmit = (e, extraData) => dashboardHandlers.handleOrderSubmit(e, extraData, { orders, setOrders, barangList, selectedBarangId, setSelectedBarangId, jumlah, setJumlah, tanggalPesan, setTanggalPesan, tanggalAcara, setTanggalAcara, pemesan, setPemesan, noHpPemesan, setNoHpPemesan, fetchOrders });
-  
+
+  // 🍏 TAMBAHKAN FUNGSI INI DI DALAM COMPONENT DASHBOARD
+  const handleUpdateOrder = async (updatedOrderData) => {
+    try {
+      // Tembak API backend Java lu untuk update data order
+      await axios.put(`${API_BASE_URL}/api/orders/${updatedOrderData.id}`, updatedOrderData);
+
+      alert("🎉 Data transaksi order berhasil diperbarui!");
+      setIsOrderModalOpen(false); // Tutup modal setelah sukses
+
+      // Refresh data biar tabel langsung update otomatis
+      if (typeof fetchOrders === 'function') {
+        fetchOrders();
+      } else {
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Gagal memperbarui order:", error);
+      alert("❌ Gagal menyimpan perubahan orderan.");
+    }
+  };
+
   // 🍏 FIX: fetchInvoices SEKARANG DI-OPER BIAR INSTAN MASUK LIST TABEL TANPA REFRESH BROWSER MANUAL
   const handleInvoiceSubmit = (e) => dashboardHandlers.handleInvoiceSubmit(e, { selectedOrderId, setSelectedOrderId, tanggalInvoice, setTanggalInvoice, invoices, setInvoices, orders, fetchInvoices });
 
   const handleEditBarang = (barang) => {
     setSelectedBarang(barang);
     setIsEditModalOpen(true);
+
+    const handleUpdateOrder = async (updatedOrderData) => {
+      try {
+        // Panggil API put/update backend lu (sesuaikan dengan endpoint backend Java lu)
+        await axios.put(`${API_BASE_URL}/api/orders/${updatedOrderData.id}`, updatedOrderData);
+
+        // Alert sukses dan perbarui list data di table dashboard
+        alert("🎉 Data transaksi order berhasil diperbarui!");
+        setIsOrderModalOpen(false); // Tutup popup modal
+
+        // Panggil kembali fungsi pencarian list orderan lu biar datanya langsung berubah di tabel
+        if (typeof fetchOrders === 'function') fetchOrders();
+        else window.location.reload();
+      } catch (error) {
+        console.error("Gagal memperbarui order:", error);
+        alert("❌ Gagal menyimpan perubahan orderan.");
+      }
+    };
   };
 
   return (
@@ -156,6 +199,7 @@ function Dashboard() {
       </aside>
 
       {/* KONTEN KANAN */}
+      {/* KONTEN KANAN */}
       <main className="admin-content">
         <div className="content-header"><h2>Halaman Kendali Admin ({activeTab.replace('-', ' ').toUpperCase()})</h2></div>
 
@@ -163,14 +207,42 @@ function Dashboard() {
 
         <ManageInventory barangList={barangList} handleAddBarang={handleAddBarang} newNamaBarang={newNamaBarang} setNewNamaBarang={setNewNamaBarang} hargaBarang={hargaBarang} setHargaBarang={setHargaBarang} activeTab={activeTab} onDeleteBarang={handleDeleteBarang} onEditBarang={handleEditBarang} />
 
-        <ManageOrder orders={orders} barangList={barangList} onOrderSubmit={handleOrderSubmit} selectedBarangId={selectedBarangId} setSelectedBarangId={setSelectedBarangId} jumlah={jumlah} setQuantity={setJumlah} setJumlah={setJumlah} tanggalPesan={tanggalPesan} setTimestamp={setTanggalPesan} setTanggalPesan={setTanggalPesan} tanggalAcara={tanggalAcara} setTanggalAcara={setTanggalAcara} pemesan={pemesan} setPemesan={setPemesan} noHpPemesan={noHpPemesan} setNoHpPemesan={setNoHpPemesan} activeTab={activeTab} />
+        {/* 🍏 OPER PROPS KE MANAGE ORDER BIAR TOMBOL DETAILNYA MAU JALAN */}
+        <ManageOrder
+          orders={orders}
+          barangList={barangList}
+          activeTab={activeTab}
+          // 🍏 OPER PROPS MODAL POPUP KE MANAGE ORDER
+          setSelectedOrder={setSelectedOrder}
+          setIsOrderModalOpen={setIsOrderModalOpen}
+        // ... sisa props lu bawaan lama ...
+        />
 
+        {/* 🍏 PROPS INI SEKARANG AMAN KARENAselectedOrderId SUDAH DIDEKLARASIKAN */}
         <ManageInvoice invoices={invoices} orders={orders} onInvoiceSubmit={handleInvoiceSubmit} selectedOrderId={selectedOrderId} setSelectedOrderId={setSelectedOrderId} tanggalInvoice={tanggalInvoice} setTanggalInvoice={setTanggalInvoice} activeTab={activeTab} templateConfig={templateConfig} setTemplateConfig={setTemplateConfig} />
+
+        {/* 🍏 TAMPILKAN DETAIL ORDER JIKA TAB AKTIF */}
+        {activeTab === 'detail-order' && (
+          <OrderDetail
+            orderData={selectedOrder}
+            onBack={() => setActiveTab('list-order')}
+          />
+        )}
       </main>
 
       {/* MODAL EDIT BARANG POPUP */}
       <EditBarangModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} barangData={selectedBarang} onRefresh={fetchBarang} />
+      {/* Taruh di paling bawah sebelum penutup div utama Dashboard */}
+      <OrderDetailModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        orderData={selectedOrder}
+        onUpdateOrder={handleUpdateOrder}
+      />
+
     </div>
+
+
   );
 }
 

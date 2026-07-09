@@ -10,6 +10,20 @@ function ManageInventory({ barangList, handleAddBarang, newNamaBarang, setNewNam
   // Cukup buat satu state ini saja untuk menampung harga inputan baru:
   // const [hargaBarang, setHargaBarang] = useState(''); 
 
+  // State existing lu (misal: barangList, dll)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Batasan maksimal 10 list per halaman
+
+  // Menghitung indeks data awal dan akhir untuk halaman aktif
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  // 🍏 Ini data yang akan di-looping di tabel (maksimal 10 data)
+  const currentItems = barangList.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Menghitung total halaman yang tersedia
+  const totalPages = Math.ceil(barangList.length / itemsPerPage);
+
   // ... sisa kode fungsi handleAddBarang dan return JSX lu ke bawah ...
 
   if (activeTab === 'create-barang') {
@@ -74,26 +88,24 @@ function ManageInventory({ barangList, handleAddBarang, newNamaBarang, setNewNam
           <table className="crud-table-premium">
             <thead>
               <tr>
-                <th style={{ width: '80px' }}>ID</th>
                 <th>Nama Barang / Jasa</th>
                 <th style={{ width: '180px', textAlign: 'right' }}>Harga Sewa</th>
-                <th style={{ width: '180px', textAlign: 'center' }}>Aksi</th> {/* 🍏 TAMBAH HEADER INI */}
+                <th style={{ width: '180px', textAlign: 'center' }}>Aksi</th>
               </tr>
             </thead>
             <tbody>
-              {barangList.length === 0 ? (
+              {/* 🍏 FIX 1: Ganti ke currentItems untuk membatasi maksimal 10 data */}
+              {currentItems.length === 0 ? (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>📭 Belum ada data barang.</td>
+                  <td colSpan="3" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>📭 Belum ada data barang.</td>
                 </tr>
               ) : (
-                barangList.map((b, index) => (
+                currentItems.map((b, index) => (
                   <tr key={b.id || index}>
-                    <td>{b.id}</td>
                     <td><strong>{b.nmBarang}</strong></td>
                     <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#34c759' }}>
                       Rp {(b.harga || 0).toLocaleString('id-ID')}
                     </td>
-                    {/* 🍏 KEDUA TOMBOL AKSI BARU */}
                     <td style={{ textAlign: 'center' }}>
                       <button
                         onClick={() => onEditBarang(b)}
@@ -116,9 +128,53 @@ function ManageInventory({ barangList, handleAddBarang, newNamaBarang, setNewNam
             </tbody>
           </table>
         </div>
+
+        {/* 🍏 FIX 2: Tambahkan Tombol Navigasi Halaman di Bawah Sini */}
+        {totalPages > 1 && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '15px',
+            marginTop: '20px',
+            paddingBottom: '10px'
+          }}>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: '1px solid #ccc',
+                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                opacity: currentPage === 1 ? 0.5 : 1
+              }}
+            >
+              ⬅️ Previous
+            </button>
+
+            <span style={{ fontWeight: 'bold', color: '#333' }}>
+              Halaman {currentPage} dari {totalPages}
+            </span>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: '1px solid #ccc',
+                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                opacity: currentPage === totalPages ? 0.5 : 1
+              }}
+            >
+              Next ➡️
+            </button>
+          </div>
+        )}
       </div>
     );
-  }
+  } 
 
   return null;
 }
