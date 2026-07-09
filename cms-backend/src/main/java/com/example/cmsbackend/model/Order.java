@@ -2,6 +2,7 @@ package com.example.cmsbackend.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_order")
@@ -11,13 +12,11 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relasi ke tabel master barang pakai Foreign Key 'barang_id'
-    @ManyToOne
-    @JoinColumn(name = "barang_id", nullable = false)
-    private Barang barang;
-
     @Column(nullable = false)
-    private Integer jumlah;
+    private String pemesan;
+
+    @Column(name = "no_hp_pemesan", nullable = false, length = 20)
+    private String noHpPemesan;
 
     @Column(name = "tanggal_pesan", nullable = false)
     private LocalDate tanggalPesan;
@@ -26,20 +25,21 @@ public class Order {
     private LocalDate tanggalAcara;
 
     @Column(nullable = false)
-    private String pemesan;
+    private Integer harga; // Berfungsi sebagai Grand Total semua item sewa
 
-    @Column(name = "no_hp_pemesan", nullable = false, length = 20)
-    private String noHpPemesan;
+    // 🍏 Relasi baru ke list detail item sewa
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderDetail> details;
 
     // --- GETTER & SETTER ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Barang getBarang() { return barang; }
-    public void setBarang(Barang barang) { this.barang = barang; }
+    public String getPemesan() { return pemesan; }
+    public void setPemesan(String pemesan) { this.pemesan = pemesan; }
 
-    public Integer getJumlah() { return jumlah; }
-    public void setJumlah(Integer jumlah) { this.jumlah = jumlah; }
+    public String getNoHpPemesan() { return noHpPemesan; }
+    public void setNoHpPemesan(String noHpPemesan) { this.noHpPemesan = noHpPemesan; }
 
     public LocalDate getTanggalPesan() { return tanggalPesan; }
     public void setTanggalPesan(LocalDate tanggalPesan) { this.tanggalPesan = tanggalPesan; }
@@ -47,9 +47,9 @@ public class Order {
     public LocalDate getTanggalAcara() { return tanggalAcara; }
     public void setTanggalAcara(LocalDate tanggalAcara) { this.tanggalAcara = tanggalAcara; }
 
-    public String getPemesan() { return pemesan; }
-    public void setPemesan(String pemesan) { this.pemesan = pemesan; }
+    public Integer getHarga() { return harga; }
+    public void setHarga(Integer harga) { this.harga = harga; }
 
-    public String getNoHpPemesan() { return noHpPemesan; }
-    public void setNoHpPemesan(String noHpPemesan) { this.noHpPemesan = noHpPemesan; }
+    public List<OrderDetail> getDetails() { return details; }
+    public void setDetails(List<OrderDetail> details) { this.details = details; }
 }

@@ -275,24 +275,28 @@ function ManageInvoice({
                   </tr>
                 </thead>
                 <tbody>
-                  {invoices.map((item) => {
-                    // 🍏 Logika generate format nomor invoice romawi (INV-xxx/MM/dd-YYYY)
-                    // Kita oper 'invoices' sebagai parameter ke-3 agar sinkron dengan setelan di securityHelper
+                  {/* 🍏 1. Tambahkan parameter 'index' setelah 'item' */}
+                  {invoices.map((item, index) => {
+
                     const invoiceNumber = item.noInvoice || (typeof formatInvoiceNumber === 'function'
                       ? formatInvoiceNumber(item.orderId || (item.order ? item.order.id : '0'), item.tanggalInvoice)
                       : 'INV-Error');
 
-                    return (
-                      <tr key={item.id} className="border-b hover:bg-gray-50 text-gray-700">
+                    // 🍏 2. Pengaman mencari ID untuk tampilan & key
+                    const orderId = item.id || (item.order ? item.order.id : index);
 
-                        {/* 🍏 1. KOLOM NOMOR INVOICE: Panggil variabel invoiceNumber yang sudah di-generate! */}
+                    return (
+                      // 🍏 3. FIX WARNING: Gabungkan orderId dan index sebagai key yang pasti unik!
+                      <tr key={`${orderId}-${index}`} className="border-b hover:bg-gray-50 text-gray-700">
+
+                        {/* Kolom Nomor Invoice */}
                         <td className="p-3 font-semibold text-blue-600">
                           {invoiceNumber}
                         </td>
 
-                        {/* 🍏 2. KOLOM ID ORDER: Biar lu gak bingung, ini nampilin ID Kunci hubungannya */}
+                        {/* Kolom ID Order */}
                         <td className="p-3 font-medium text-gray-600">
-                          ORD-#{item.id}
+                          ORD-#{orderId}
                         </td>
 
                         <td className="p-3">

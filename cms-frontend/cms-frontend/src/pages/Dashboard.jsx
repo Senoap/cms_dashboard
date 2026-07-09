@@ -85,7 +85,7 @@ function Dashboard() {
   const handleDeleteBarang = (id) => dashboardHandlers.handleDeleteBarang(id, { fetchBarang });
   
   // Memastikan fetchOrders dikirim agar form order langsung refresh list tabel
-  const handleOrderSubmit = (e) => dashboardHandlers.handleOrderSubmit(e, { orders, setOrders, barangList, selectedBarangId, setSelectedBarangId, jumlah, setJumlah, tanggalPesan, setTanggalPesan, tanggalAcara, setTanggalAcara, pemesan, setPemesan, noHpPemesan, setNoHpPemesan, fetchOrders });
+  const handleOrderSubmit = (e, extraData) => dashboardHandlers.handleOrderSubmit(e, extraData, { orders, setOrders, barangList, selectedBarangId, setSelectedBarangId, jumlah, setJumlah, tanggalPesan, setTanggalPesan, tanggalAcara, setTanggalAcara, pemesan, setPemesan, noHpPemesan, setNoHpPemesan, fetchOrders });
   
   // 🍏 FIX: fetchInvoices SEKARANG DI-OPER BIAR INSTAN MASUK LIST TABEL TANPA REFRESH BROWSER MANUAL
   const handleInvoiceSubmit = (e) => dashboardHandlers.handleInvoiceSubmit(e, { selectedOrderId, setSelectedOrderId, tanggalInvoice, setTanggalInvoice, invoices, setInvoices, orders, fetchInvoices });
