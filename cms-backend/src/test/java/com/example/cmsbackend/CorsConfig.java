@@ -15,10 +15,10 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**") // Mengamankan semua jalur endpoint /api/
-                .allowedOrigins(allowedOrigins.toArray(new String[0])) // Mengubah List jadi Array String
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Menentukan method yang sah
-                .allowedHeaders("*") // Mengizinkan semua header bawaan browser/axios
-                .allowCredentials(true); // Mengizinkan pengiriman cookie/auth session jika nanti lu butuh
+        registry.addMapping("/**") // 🍏 Diubah jadi /** biar mencakup semua URL tanpa kecuali
+                .allowedOrigins(allowedOrigins.toArray(new String[0]))
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
-}
+};

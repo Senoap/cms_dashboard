@@ -1,0 +1,18 @@
+:root {
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw; /* Pakai 100% lebar viewport monitor */
+  overflow-x: hidden; /* Biar gak ada scroll horizontal */
+  background-color: #f4f6f9;
+  font-family: Arial, sans-serif;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
