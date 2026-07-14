@@ -1,24 +1,23 @@
-package com.example.cmsbackend; // 🍏 SESUAIKAN dengan nama package utama project lu!
+package com.example.cmsbackend;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import java.util.List;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    // Membaca konfigurasi IP dari file application.properties secara dinamis
+    // 🍏 Menggunakan String[] agar Spring Boot otomatis memecah koma dengan sempurna
     @Value("${app.cors.allowed-origins}")
-    private List<String> allowedOrigins;
+    private String[] allowedOrigins;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // 🍏 Diubah jadi /** biar mencakup semua URL tanpa kecuali
-                .allowedOrigins(allowedOrigins.toArray(new String[0]))
+        registry.addMapping("/**") // 🍏 Global mencakup semua URL tanpa kecuali
+                .allowedOrigins(allowedOrigins) // 🍏 Langsung masukkan array-nya tanpa toArray()
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-};
+}
