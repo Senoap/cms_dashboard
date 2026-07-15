@@ -31,6 +31,9 @@ public class Order {
     @Column(name = "alamat", length = 500)
     private String alamat;
 
+    @Column(name = "lokasi_acara", length = 500)
+    private String lokasiAcara;
+
     // 🍏 Mengamankan serialisasi data satu arah dari Induk ke Anak
     @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -57,6 +60,9 @@ public class Order {
 
     public String getAlamat() { return alamat; }
     public void setAlamat(String alamat) { this.alamat = alamat; }
+
+    public String getLokasiAcara() { return lokasiAcara; }
+    public void setLokasiAcara(String lokasiAcara) { this.lokasiAcara = lokasiAcara; }
 
     public List<OrderDetail> getDetails() { return details; }
     public void setDetails(List<OrderDetail> details) { this.details = details; }

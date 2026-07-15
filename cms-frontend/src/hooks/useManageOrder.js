@@ -8,7 +8,8 @@ export function useManageOrder(barangList, onRefreshOrder) {
     tanggalAcara: '',
     pemesan: '',
     noHpPemesan: '',
-    alamat: ''
+    alamat: '',
+    lokasiAcara:''
   });
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -85,7 +86,7 @@ export function useManageOrder(barangList, onRefreshOrder) {
       alert("Transaksi Order Berhasil Disimpan!");
 
       setCart([]);
-      setCustomerForm({ tanggalPesan: '', tanggalAcara: '', pemesan: '', noHpPemesan: '', alamat: '' });
+      setCustomerForm({ tanggalPesan: '', tanggalAcara: '', pemesan: '', noHpPemesan: '', alamat: '', lokasiAcara: ''});
       onRefreshOrder();
     } catch (err) {
       console.error(err);

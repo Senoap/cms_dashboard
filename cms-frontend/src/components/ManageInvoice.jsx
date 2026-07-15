@@ -125,11 +125,13 @@ function ManageInvoice({
                 <h4>Ditagihkan Kepada:</h4>
                 <h3>[Nama Pelanggan Contoh]</h3>
                 <p><strong>No. HP / WA:</strong> 081234567xxx</p>
+                <p><strong>Alamat:</strong> {selectedInvoice.order && selectedInvoice.order.alamat ? selectedInvoice.order.alamat : '-'}</p>
               </div>
               <div className="event-details">
                 <h4>Detail Pelaksanaan Acara:</h4>
                 <p><strong>Tanggal Order:</strong> {todayDate}</p>
                 <p><strong>Tanggal Acara:</strong> {todayDate}</p>
+                <p><strong>Lokasi Acara:</strong> {selectedInvoice.order && selectedInvoice.order.lokasiAcara ? selectedInvoice.order.lokasiAcara : (selectedInvoice.order && selectedInvoice.order.alamat ? selectedInvoice.order.alamat : '-')}</p>
               </div>
             </div>
 
@@ -294,7 +296,7 @@ function ManageInvoice({
                 </div>
                 <div className="invoice-title-meta">
                   <h1>INVOICE</h1>
-                  <p><strong>No:</strong> {formatInvoiceNumber(selectedInvoice.orderId, selectedInvoice.tanggalInvoice)}</p>
+                  <p><strong>No:</strong> {selectedInvoice.noInvoice || formatInvoiceNumber(selectedInvoice.orderId || (selectedInvoice.order ? selectedInvoice.order.id : '0'), selectedInvoice.tanggalInvoice)}</p>
                   <p><strong>Tanggal Tagihan:</strong> {selectedInvoice.tanggalInvoice}</p>
                 </div>
               </div>
@@ -304,13 +306,15 @@ function ManageInvoice({
               <div className="invoice-billing-details">
                 <div className="bill-to">
                   <h4>Ditagihkan Kepada:</h4>
-                  <h3>{selectedInvoice.order ? selectedInvoice.order.pemesan : 'N/A'}</h3>
-                  <p><strong>No. HP / WA:</strong> {selectedInvoice.order ? selectedInvoice.order.noHpPemesan : 'N/A'}</p>
+                  <h3>{selectedInvoice.order?.pemesan ?? 'N/A'}</h3>
+                  <p><strong>No. HP / WA:</strong> {selectedInvoice.order?.noHpPemesan ?? 'N/A'}</p>
+                  <p><strong>Alamat Tagihan:</strong> {selectedInvoice.order?.alamat ?? '-'}</p>
                 </div>
                 <div className="event-details">
                   <h4>Detail Pelaksanaan Acara:</h4>
-                  <p><strong>Tanggal Order:</strong> {selectedInvoice.order ? selectedInvoice.order.tanggalPesan : 'N/A'}</p>
-                  <p><strong>Tanggal Acara:</strong> {selectedInvoice.order ? selectedInvoice.order.tanggalAcara : 'N/A'}</p>
+                  <p><strong>Tanggal Order:</strong> {selectedInvoice.order?.tanggalPesan ?? 'N/A'}</p>
+                  <p><strong>Tanggal Acara:</strong> {selectedInvoice.order?.tanggalAcara ?? 'N/A'}</p>
+                  <p><strong>Lokasi Acara:</strong> {selectedInvoice.order?.lokasiAcara ?? '-'}</p>
                 </div>
               </div>
 
@@ -345,6 +349,14 @@ function ManageInvoice({
                     </tr>
                   )}
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="2" style={{ textAlign: 'right', fontWeight: 'bold', borderTop: '2px solid #ddd', padding: '15px 10px' }}>Grand Total Tagihan:</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold', borderTop: '2px solid #ddd', padding: '15px 10px', fontSize: '15px', color: '#16a34a' }}>
+                      Rp {selectedInvoice.order ? (selectedInvoice.order.harga || 0).toLocaleString('id-ID') : 0}
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
 
               <div className="invoice-paper-footer">

@@ -18,13 +18,16 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
   if (activeTab === 'create-order') {
     return (
       <div className="form-container-premium" style={{ maxWidth: '850px' }}>
+        
+        {/* --- HEADER --- */}
         <div className="form-header-premium">
           <h3>📦 Buat Transaksi Order Baru</h3>
           <p>Catat pesanan pelanggan baru dengan memilih beberapa jenis barang sekaligus.</p>
         </div>
 
         <div className="form-body-premium">
-          {/* AREA 1: INPUT BARANG & QUANTITY */}
+          
+          {/* --- AREA 1: INPUT BARANG & QUANTITY --- */}
           <div className="form-group-premium">
             <label>Pilih Barang / Aset</label>
             <select name="selectedBarangId" value={itemInput.selectedBarangId} onChange={handleItemInputChange}>
@@ -49,7 +52,7 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
             ➕ Masukkan ke Keranjang
           </button>
 
-          {/* AREA 2: TABEL KERANJANG BELANJA SEMENTARA */}
+          {/* --- AREA 2: TABEL KERANJANG SEMENTARA --- */}
           {cart.length > 0 && (
             <div style={{ marginBottom: '30px', padding: '15px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
               <h4 style={{ marginBottom: '10px', color: '#1f2937' }}>🛒 Daftar Item Keranjang Sementara:</h4>
@@ -83,7 +86,7 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
             </div>
           )}
 
-          {/* AREA 3: FORM UTAMA DATA PELANGGAN */}
+          {/* --- AREA 3: FORM UTAMA PELANGGAN --- */}
           <form onSubmit={handleSubmitOrder}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div className="form-group-premium">
@@ -106,13 +109,27 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
               <input type="text" name="noHpPemesan" placeholder="Contoh: 081234567xxx" value={customerForm.noHpPemesan} onChange={handleCustomerInputChange} required />
             </div>
 
+            {/* --- ALAMAT TAGIHAN --- */}
             <div className="form-group-premium">
-              <label>Alamat Pengiriman</label>
+              <label>Alamat Penagihan (Billing Address)</label>
               <textarea
                 name="alamat"
                 className="form-input-premium"
-                placeholder="Masukkan alamat lokasi acara..."
+                placeholder="Masukkan alamat domisili / kantor pelanggan..."
                 value={customerForm.alamat}
+                onChange={handleCustomerInputChange}
+                required
+              />
+            </div>
+
+            {/* --- ALAMAT ACARA --- */}
+            <div className="form-group-premium">
+              <label>Alamat Pelaksanaan Acara</label>
+              <textarea
+                name="lokasiAcara"
+                className="form-input-premium"
+                placeholder="Contoh: Gedung Balai Sudirman, Jl. Dr. Saharjo..."
+                value={customerForm.lokasiAcara}
                 onChange={handleCustomerInputChange}
                 required
               />
