@@ -1,25 +1,45 @@
-import api from './api'; 
+import api from './api';
 
 export const dashboardService = {
   fetchPosts: async () => {
-    const res = await api.get('/posts'); 
-    return res.data;
+    try {
+      const res = await api.get('/posts');
+      return res.data;
+    } catch (err) {
+      console.error("❌ [dashboardService.fetchPosts] Error:", err);
+      throw err;
+    }
   },
 
   fetchBarang: async () => {
-    const res = await api.get('/barang'); 
-    return res.data;
+    try {
+      const res = await api.get('/barang');
+      return res.data;
+    } catch (err) {
+      console.error("❌ [dashboardService.fetchBarang] Error:", err);
+      throw err;
+    }
   },
 
   fetchOrders: async () => {
-    // 🍏 Diubah dari '/orders' menjadi '/order' agar tidak 404
-    const res = await api.get('/order'); 
-    return res.data;
+    try {
+      // 🍏 Endpoint disesuaikan ke '/order'
+      const res = await api.get('/order');
+      return res.data;
+    } catch (err) {
+      console.error("❌ [dashboardService.fetchOrders] Error:", err);
+      throw err;
+    }
   },
 
   fetchInvoices: async () => {
-    // 🍏 Diubah dari '/invoices' menjadi '/invoice' agar tidak 404
-    const res = await api.get('/invoice'); 
-    return res.data;
+    try {
+      // 🍏 Endpoint disesuaikan ke '/invoice'
+      const res = await api.get('/invoice');
+      return res.data;
+    } catch (err) {
+      console.error("❌ [dashboardService.fetchInvoices] Error:", err);
+      throw err;
+    }
   }
 };
