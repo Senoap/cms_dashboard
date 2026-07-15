@@ -5,10 +5,13 @@ import com.example.cmsbackend.model.OrderDetail;
 import com.example.cmsbackend.model.Barang;
 import com.example.cmsbackend.repository.OrderRepository;
 import com.example.cmsbackend.repository.BarangRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.cmsbackend.model.Transaksi;
+import com.example.cmsbackend.repository.TransaksiRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,9 @@ public class OrderController {
 
     @Autowired
     private BarangRepository barangRepository;
+
+    @Autowired
+    private TransaksiRepository transaksiRepository;
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrder() {
@@ -131,15 +137,33 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
+@Transactional
     @PutMapping("/{id}/status")
     public ResponseEntity<Order> updateStatusTagihan(@PathVariable Long id, @RequestBody String status) {
-        // 🍏 Tambahkan replace untuk membersihkan tanda kutip ekstra dari JSON string
+        // Membersihkan tanda kutip ekstra dari JSON string
         String cleanStatus = status.replace("\"", "");
 
         return orderRepository.findById(id).map(order -> {
+
+            // LOGIKA BARU: Cek kalau statusnya jadi "Tertagih" dan sebelumnya bukan "Tertagih"
+            if ("Tertagih".equals(cleanStatus) && !"Tertagih".equals(order.getStatusTagihan())) {
+
+                // Buat record Transaksi baru
+                Transaksi transaksiBaru = new Transaksi();
+                transaksiBaru.setOrder(order);
+                transaksiBaru.setTotal(order.getHarga().doubleValue());
+
+                // Simpan tanggal hari ini
+                transaksiBaru.setTanggal(java.time.LocalDate.now());
+
+                // Simpan ke database
+                transaksiRepository.save(transaksiBaru);
+            }
+
+            // Tetap simpan status yang baru di Order
             order.setStatusTagihan(cleanStatus);
             return ResponseEntity.ok(orderRepository.save(order));
+
         }).orElse(ResponseEntity.notFound().build());
     }
 }

@@ -159,6 +159,45 @@ function ManageInvoice({
     );
   }
 
+  // --- SUBMENU: CREATE INVOICE ---
+  if (activeTab === 'create-invoice') {
+    return (
+      <div className="form-container-premium">
+        <div className="form-header-premium">
+          <h3>🧾 Generate Invoice / Tagihan</h3>
+          <p>Terbitkan tagihan baru berdasarkan ID Order yang sudah ada.</p>
+        </div>
+
+        <form onSubmit={handleCreateInvoice} className="form-body-premium">
+          <div className="form-group-premium">
+            <label>Pilih Transaksi Order</label>
+            <select value={selectedOrderId} onChange={e => setSelectedOrderId(e.target.value)} required>
+              <option value="">-- Pilih Order Aktif --</option>
+              {orders
+                .filter(ord => !invoices.some(inv => inv.orderId === ord.id))
+                .map(ord => (
+                  <option key={ord.id} value={ord.id}>
+                    Order #{ord.id} - {ord.pemesan}
+                  </option>
+                ))
+              }
+            </select>
+          </div>
+          <div className="form-group-premium">
+            <label>Tanggal Penerbitan Invoice</label>
+            <input type="date" value={tanggalInvoice} onChange={e => setTanggalInvoice(e.target.value)} required />
+          </div>
+          <div className="form-input-premium">
+            <button type="submit" disabled={loading} className="btn-premium-primary">
+              {loading ? "Memproses..." : "🧾 Cetak & Terbitkan Invoice"}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+
   // --- SUBMENU: LIST INVOICE ---
   if (activeTab === 'list-invoice') {
     return (
@@ -198,8 +237,17 @@ function ManageInvoice({
                           <select
                             value={item.order?.statusTagihan || "Belum Tertagih"}
                             onChange={(e) => updateStatus(orderId, e.target.value)}
-                            style={{ width: '100%', padding: '5px', borderRadius: '4px' }}
+                            // 🔒 Disable jika sudah "Tertagih"
+                            disabled={item.order?.statusTagihan === "Tertagih"}
+                            style={{
+                              width: '100%',
+                              padding: '5px',
+                              borderRadius: '4px',
+                              backgroundColor: item.order?.statusTagihan === "Tertagih" ? '#f1f5f9' : 'white',
+                              cursor: item.order?.statusTagihan === "Tertagih" ? 'not-allowed' : 'pointer'
+                            }}
                           >
+                            {/* Opsi selalu ada agar value saat ini tetap terpilih */}
                             <option value="Belum Tertagih">Belum Tertagih</option>
                             <option value="Proses Tagih">Proses Tagih</option>
                             <option value="Tertagih">Tertagih</option>
