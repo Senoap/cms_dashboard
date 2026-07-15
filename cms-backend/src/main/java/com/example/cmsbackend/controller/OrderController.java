@@ -1,47 +1,77 @@
 package com.example.cmsbackend.controller;
 
-// 🍏 TAMBAHKAN BARIS IMPORT INI DI ATAS BIAR KATA-KATANYA DIKENAL:
 import com.example.cmsbackend.model.Order;
-import com.example.cmsbackend.model.OrderDetail; // Supaya kenal OrderDetail
+import com.example.cmsbackend.model.OrderDetail;
+import com.example.cmsbackend.model.Barang;
 import com.example.cmsbackend.repository.OrderRepository;
+import com.example.cmsbackend.repository.BarangRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;       // Supaya kenal HttpStatus
-import org.springframework.http.ResponseEntity;   // Supaya kenal ResponseEntity
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/order")
-//@CrossOrigin(origins = "*")
 public class OrderController {
 
     @Autowired
     private OrderRepository orderRepository;
 
-    // Tambah Order Baru (Create)
-    @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        try {
-            // 🍏 KUNCI UTAMA: Loop isi rincian barang, ikat objek induk ke setiap anak detailnya!
-            if (order.getDetails() != null) {
-                for (OrderDetail detail : order.getDetails()) {
-                    detail.setOrder(order); // Menghindari kolom 'order_id' bernilai NULL di database
-                }
-            }
+    @Autowired
+    private BarangRepository barangRepository;
 
-            // Simpan data induk beserta anak-anaknya secara otomatis (Cascade)
-            Order savedOrder = orderRepository.save(order);
-            return ResponseEntity.ok(savedOrder);
+    @GetMapping
+    public ResponseEntity<List<Order>> getAllOrder() {
+        try {
+            List<Order> orders = orderRepository.findAll();
+            if (orders == null) {
+                return ResponseEntity.ok(new ArrayList<>());
+            }
+            return ResponseEntity.ok(orders);
         } catch (Exception e) {
-            // Print eror asli di terminal Java biar lu bisa pantau kalau ada yang ganjil
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    // Ambil Semua List Order (Read)
-    @GetMapping
-    public List<Order> getAllOrder() {
-        return orderRepository.findAll();
+    @PostMapping
+    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+        try {
+            // Cek apakah data list details dikirim dari frontend React
+            if (order.getDetails() != null && !order.getDetails().isEmpty()) {
+                List<OrderDetail> validatedDetails = new ArrayList<>();
+
+                for (OrderDetail detail : order.getDetails()) {
+                    // 🍏 KRUSIAL: Link balik objek induk ke setiap item detail
+                    detail.setOrder(order);
+
+                    // Validasi dan tarik data barang asli dari database berdasarkan ID yang dikirim
+                    if (detail.getBarang() != null && detail.getBarang().getId() != null) {
+                        var barangOpt = barangRepository.findById(detail.getBarang().getId());
+                        if (barangOpt.isPresent()) {
+                            Barang barangAsli = barangOpt.get();
+                            detail.setBarang(barangAsli);
+
+                            // Hitung ulang subtotal otomatis di sisi backend agar aman
+                            detail.setSubTotal(barangAsli.getHarga() * detail.getJumlah());
+                        }
+                    }
+                    validatedDetails.add(detail);
+                }
+
+                // Set kembali list detail yang sudah valid dan terikat ke objek utama
+                order.setDetails(validatedDetails);
+            }
+
+            // Simpan objek utama. Karena cascade = CascadeType.ALL, detail otomatis ikut tersimpan!
+            Order savedOrder = orderRepository.save(order);
+            return ResponseEntity.ok(savedOrder);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

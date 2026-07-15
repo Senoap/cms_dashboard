@@ -3,6 +3,7 @@ package com.example.cmsbackend.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "tbl_order")
@@ -25,13 +26,17 @@ public class Order {
     private LocalDate tanggalAcara;
 
     @Column(nullable = false)
-    private Integer harga; // Berfungsi sebagai Grand Total semua item sewa
+    private Integer harga;
 
-    // 🍏 Relasi baru ke list detail item sewa
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "alamat", length = 500)
+    private String alamat;
+
+    // 🍏 Mengamankan serialisasi data satu arah dari Induk ke Anak
+    @JsonManagedReference
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderDetail> details;
 
-    // --- GETTER & SETTER ---
+    // --- GETTER & SETTER MANUAL (Jangan pakai toString otomatis jika ada relasi) ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -49,6 +54,9 @@ public class Order {
 
     public Integer getHarga() { return harga; }
     public void setHarga(Integer harga) { this.harga = harga; }
+
+    public String getAlamat() { return alamat; }
+    public void setAlamat(String alamat) { this.alamat = alamat; }
 
     public List<OrderDetail> getDetails() { return details; }
     public void setDetails(List<OrderDetail> details) { this.details = details; }

@@ -1,7 +1,7 @@
 package com.example.cmsbackend.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "tbl_order_detail")
@@ -11,9 +11,10 @@ public class OrderDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 🍏 Memutus loop referensi balik ke objek Order utama
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    @JsonIgnore // Mencegah infinite loop (back-reference) saat serialisasi JSON
     private Order order;
 
     @ManyToOne

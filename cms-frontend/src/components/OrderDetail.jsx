@@ -30,7 +30,7 @@ function OrderDetail({ orderData, onBack }) {
           <div>
             <label className="order-info-label">Nama Pelanggan</label>
             <div className="order-info-value-bold">
-              {orderData.pemesan || orderData.namaPelanggan || '-'}
+              {orderData.pemesan || '-'}
             </div>
           </div>
           
@@ -55,7 +55,15 @@ function OrderDetail({ orderData, onBack }) {
           <div>
             <label className="order-info-label">Nomor Telepon</label>
             <div className="order-info-value">
-              {orderData.noHpPemesan || orderData.telepon || '-'}
+              {orderData.noHpPemesan || '-'}
+            </div>
+          </div>
+
+          {/* 🍏 TAMBAHAN: FIELD ALAMAT PENGIRIMAN (MELINTANG SELEBAR GRID) */}
+          <div style={{ gridColumn: 'span 2', marginTop: '10px' }}>
+            <label className="order-info-label">Alamat Pengiriman / Lokasi Acara</label>
+            <div className="order-info-value" style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0', minHeight: '40px' }}>
+              {orderData.alamat || 'Tidak ada alamat pengiriman tercatat.'}
             </div>
           </div>
         </div>
@@ -70,20 +78,28 @@ function OrderDetail({ orderData, onBack }) {
             <thead>
               <tr style={{ backgroundColor: '#f1f3f5' }}>
                 <th style={{ textAlign: 'left', padding: '12px' }}>Nama Barang / Jasa</th>
-                <th className="th-harga-satuan">Harga Satuan</th>
-                <th className="th-jumlah">Jumlah</th>
-                <th className="th-subtotal">Subtotal</th>
+                <th className="th-harga-satuan" style={{ textAlign: 'right' }}>Harga Satuan</th>
+                <th className="th-jumlah" style={{ textAlign: 'center' }}>Jumlah</th>
+                <th className="th-subtotal" style={{ textAlign: 'right' }}>Subtotal</th>
               </tr>
             </thead>
             <tbody>
-              {orderData.items && orderData.items.length > 0 ? (
-                orderData.items.map((item, index) => (
+              {/* 🍏 PERBAIKAN: Membaca array 'details' dari JPA Hibernate */}
+              {orderData.details && orderData.details.length > 0 ? (
+                orderData.details.map((item, index) => (
                   <tr key={item.id || index} style={{ borderBottom: '1px solid #e9ecef' }}>
-                    <td className="td-item-name"><strong>{item.nmBarang || item.namaBarang}</strong></td>
-                    <td className="td-item-price">Rp {(item.harga || 0).toLocaleString('id-ID')}</td>
-                    <td className="td-item-qty">{item.quantity || item.jumlah || 1} Merek/Pcs</td>
-                    <td className="td-item-subtotal">
-                      Rp {((item.harga || 0) * (item.quantity || item.jumlah || 1)).toLocaleString('id-ID')}
+                    {/* Akses nama barang melalui objek barang relasional */}
+                    <td className="td-item-name">
+                      <strong>{item.barang ? item.barang.nmBarang : 'Barang Tidak Diketahui'}</strong>
+                    </td>
+                    <td className="td-item-price" style={{ textAlign: 'right' }}>
+                      Rp {item.barang ? (item.barang.harga || 0).toLocaleString('id-ID') : 0}
+                    </td>
+                    <td className="td-item-qty" style={{ textAlign: 'center' }}>
+                      {item.jumlah || 0} Pcs
+                    </td>
+                    <td className="td-item-subtotal" style={{ textAlign: 'right' }}>
+                      Rp {(item.subTotal || 0).toLocaleString('id-ID')}
                     </td>
                   </tr>
                 ))
@@ -100,8 +116,9 @@ function OrderDetail({ orderData, onBack }) {
         <div className="order-summary-box">
           <div style={{ textAlign: 'right' }}>
             <span className="order-summary-text">Total Keseluruhan:</span>
-            <h2 className="order-summary-total">
-              Rp {(orderData.totalHarga || orderData.totalAmount || 0).toLocaleString('id-ID')}
+            {/* 🍏 PERBAIKAN: Memanggil properti 'harga' (Grand Total) sesuai entitas Order.java */}
+            <h2 className="order-summary-total" style={{ color: '#16a34a', fontWeight: 'bold' }}>
+              Rp {(orderData.harga || 0).toLocaleString('id-ID')}
             </h2>
           </div>
         </div>

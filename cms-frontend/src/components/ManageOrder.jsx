@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { orderService } from '../services/orderService'; // 🍏 Import service baru
+import OrderListView from './OrderListView'; // 🍏 Import komponen tabel yang baru dibuat
 
 function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
   // 🍏 ISOLASI STATE: Semua form input di-manage di sini sekarang
@@ -9,7 +10,8 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
   const [tanggalAcara, setTanggalAcara] = useState('');
   const [pemesan, setPemesan] = useState('');
   const [noHpPemesan, setNoHpPemesan] = useState('');
-  
+  const [alamat, setAlamat] = useState('');
+
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -59,43 +61,48 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
   const grandTotal = cart.reduce((sum, item) => sum + item.subTotal, 0);
 
   // 🍏 Fungsi kirim data ke Backend via Service
+  // 🍏 Ganti fungsi handleSubmitOrder bawaan lu dengan ini:
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     if (cart.length === 0) return alert("Keranjang belanja kosong! Isi barang dulu cuy.");
-    
+
     setLoading(true);
     try {
-      // Petakan struktur detail pesanan agar sesuai dengan kebutuhan backend lu
       const payload = {
-        tanggalPesan,
-        tanggalAcara,
-        pemesan,
-        noHpPemesan,
-        harga: grandTotal,
-        // Kirim list item belanjaan
-        items: cart.map(item => ({
-          barangId: item.barangId,
-          jumlah: item.jumlah
+        tanggalPesan, //
+        tanggalAcara, //
+        pemesan, //
+        noHpPemesan, //
+        alamat,
+        harga: grandTotal, //
+        // 🍏 PERBAIKAN UTAMA: Sesuaikan struktur item keranjang
+        details: cart.map(item => ({
+          barang: {
+            id: item.barangId
+          },
+          jumlah: item.jumlah,
+          subTotal: item.subTotal
         }))
       };
 
-      await orderService.create(payload);
+      await orderService.create(payload); //[cite: 5]
       alert("Transaksi Order Berhasil Disimpan!");
 
-      // Reset semua form & keranjang
-      setCart([]);
-      setTanggalPesan('');
-      setTanggalAcara('');
-      setPemesan('');
-      setNoHpPemesan('');
-      
-      // Refresh data list order di parent
-      onRefreshOrder();
+      // Reset semua form & keranjang[cite: 5]
+      setCart([]); //[cite: 5]
+      setTanggalPesan(''); //[cite: 5]
+      setTanggalAcara(''); //[cite: 5]
+      setPemesan(''); //[cite: 5]
+      setNoHpPemesan(''); //[cite: 5]
+      setAlamat('');
+
+      // Refresh data list order di parent[cite: 5]
+      onRefreshOrder(); //[cite: 5]
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan transaksi order!");
     } finally {
-      setLoading(false);
+      setLoading(false); //[cite: 5]
     }
   };
 
@@ -190,6 +197,17 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
               <input type="text" placeholder="Contoh: 081234567xxx" value={noHpPemesan} onChange={e => setNoHpPemesan(e.target.value)} required />
             </div>
 
+            <div className="form-group-premium">
+              <label>Alamat Pengiriman</label>
+              <textarea
+                className="form-input-premium"
+                placeholder="Masukkan alamat lokasi acara..."
+                value={alamat}
+                onChange={(e) => setAlamat(e.target.value)}
+                required
+              />
+            </div>
+
             <div className="form-actions-premium">
               <button type="submit" disabled={loading} className="btn-submit-premium">
                 {loading ? "Menyimpan..." : "💾 Simpan Transaksi Order"}
@@ -201,57 +219,13 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
     );
   }
 
+  // 🍏 Ganti blok list-order di ManageOrder.jsx dengan kode ringkas ini:
   if (activeTab === 'list-order') {
     return (
-      <div className="table-container-premium" style={{ maxWidth: '100%' }}>
-        <div className="table-header-premium">
-          <h3>📋 Daftar Transaksi Masuk</h3>
-          <p>Seluruh riwayat pesanan pelanggan yang masuk ke Pinarak Langgeng.</p>
-        </div>
-
-        <div className="table-responsive-premium">
-          <table className="crud-table-premium">
-            <thead>
-              <tr>
-                <th>Nama Pemesan</th>
-                <th>Daftar Rincian Barang / Qty</th>
-                <th>Grand Total</th>
-                <th>Tgl Pesan</th>
-                <th>Tgl Acara</th>
-                <th>No HP / WA</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.length === 0 ? (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>📭 Belum ada data order masuk.</td>
-                </tr>
-              ) : (
-                orders.map(ord => (
-                  <tr key={ord.id}>
-                    <td><strong>{ord.pemesan}</strong></td>
-                    <td>
-                      <ul style={{ margin: 0, paddingLeft: '15px', fontSize: '12px' }}>
-                        {ord.details && ord.details.map((det, idx) => (
-                          <li key={idx}>
-                            {det.barang ? det.barang.nmBarang : 'Aset Terhapus'} <strong>({det.jumlah} pcs)</strong>
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td style={{ fontWeight: 'bold', color: '#16a34a' }}>
-                      Rp {ord.harga ? ord.harga.toLocaleString('id-ID') : 0}
-                    </td>
-                    <td>{ord.tanggalPesan}</td>
-                    <td><code className="code-slug-premium">{ord.tanggalAcara}</code></td>
-                    <td>{ord.noHpPemesan}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <OrderListView
+        orders={orders}
+        onRefreshOrder={onRefreshOrder}
+      />
     );
   }
 
