@@ -11,5 +11,16 @@ export const orderService = {
   create: async (payload) => {
     const response = await api.post('/order', payload);
     return response.data;
+  },
+
+  // 🍏 TAMBAHAN: Aksi hapus transaksi order berdasarkan ID
+  delete: async (id) => {
+    const response = await api.delete(`/order/${id}`);
+    return response.data;
+  },
+
+  update: async (id, payload) => {
+    const response = await api.put(`/order/${id}`, payload);
+    return response.data;
   }
 };
