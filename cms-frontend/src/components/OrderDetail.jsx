@@ -1,7 +1,4 @@
-import React from 'react';
-
 function OrderDetail({ orderData, onBack }) {
-  // 🍏 Guard Clause: Jika data orderan belum dimuat atau kosong, tampilin loading
   if (!orderData) {
     return (
       <div className="order-detail-loading">
@@ -12,26 +9,21 @@ function OrderDetail({ orderData, onBack }) {
 
   return (
     <div className="form-container-premium">
-      {/* Header Form Detail */}
       <div className="form-header-premium order-detail-header">
         <div>
           <h3>📄 Detail Transaksi Order</h3>
           <p>Menampilkan informasi lengkap pesanan dan item barang dari database.</p>
         </div>
-        <button onClick={onBack} className="btn-back-gray">
-          ⬅️ Kembali ke List
-        </button>
+        <button onClick={onBack} className="btn-back-gray">⬅️ Kembali ke List</button>
       </div>
 
       <div className="form-body-premium" style={{ marginTop: '20px' }}>
         
-        {/* ================= SECTION 1: INFORMASI PELANGGAN ================= */}
+        {/* INFORMASI PELANGGAN */}
         <div className="order-info-grid">
           <div>
             <label className="order-info-label">Nama Pelanggan</label>
-            <div className="order-info-value-bold">
-              {orderData.pemesan || '-'}
-            </div>
+            <div className="order-info-value-bold">{orderData.pemesan || '-'}</div>
           </div>
           
           <div>
@@ -54,12 +46,9 @@ function OrderDetail({ orderData, onBack }) {
 
           <div>
             <label className="order-info-label">Nomor Telepon</label>
-            <div className="order-info-value">
-              {orderData.noHpPemesan || '-'}
-            </div>
+            <div className="order-info-value">{orderData.noHpPemesan || '-'}</div>
           </div>
 
-          {/* 🍏 TAMBAHAN: FIELD ALAMAT PENGIRIMAN (MELINTANG SELEBAR GRID) */}
           <div style={{ gridColumn: 'span 2', marginTop: '10px' }}>
             <label className="order-info-label">Alamat Pengiriman / Lokasi Acara</label>
             <div className="order-info-value" style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0', minHeight: '40px' }}>
@@ -68,7 +57,7 @@ function OrderDetail({ orderData, onBack }) {
           </div>
         </div>
 
-        {/* ================= SECTION 2: TABEL ITEM BARANG ================= */}
+        {/* TABEL ITEM BARANG */}
         <div className="table-header-premium" style={{ paddingLeft: '0', marginBottom: '10px' }}>
           <h4>📦 Daftar Item yang Dipesan</h4>
         </div>
@@ -78,27 +67,23 @@ function OrderDetail({ orderData, onBack }) {
             <thead>
               <tr style={{ backgroundColor: '#f1f3f5' }}>
                 <th style={{ textAlign: 'left', padding: '12px' }}>Nama Barang / Jasa</th>
-                <th className="th-harga-satuan" style={{ textAlign: 'right' }}>Harga Satuan</th>
-                <th className="th-jumlah" style={{ textAlign: 'center' }}>Jumlah</th>
-                <th className="th-subtotal" style={{ textAlign: 'right' }}>Subtotal</th>
+                <th style={{ textAlign: 'right' }}>Harga Satuan</th>
+                <th style={{ textAlign: 'center' }}>Jumlah</th>
+                <th style={{ textAlign: 'right' }}>Subtotal</th>
               </tr>
             </thead>
             <tbody>
-              {/* 🍏 PERBAIKAN: Membaca array 'details' dari JPA Hibernate */}
               {orderData.details && orderData.details.length > 0 ? (
                 orderData.details.map((item, index) => (
                   <tr key={item.id || index} style={{ borderBottom: '1px solid #e9ecef' }}>
-                    {/* Akses nama barang melalui objek barang relasional */}
                     <td className="td-item-name">
                       <strong>{item.barang ? item.barang.nmBarang : 'Barang Tidak Diketahui'}</strong>
                     </td>
-                    <td className="td-item-price" style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right' }}>
                       Rp {item.barang ? (item.barang.harga || 0).toLocaleString('id-ID') : 0}
                     </td>
-                    <td className="td-item-qty" style={{ textAlign: 'center' }}>
-                      {item.jumlah || 0} Pcs
-                    </td>
-                    <td className="td-item-subtotal" style={{ textAlign: 'right' }}>
+                    <td style={{ textAlign: 'center' }}>{item.jumlah || 0} Pcs</td>
+                    <td style={{ textAlign: 'right' }}>
                       Rp {(item.subTotal || 0).toLocaleString('id-ID')}
                     </td>
                   </tr>
@@ -112,12 +97,11 @@ function OrderDetail({ orderData, onBack }) {
           </table>
         </div>
 
-        {/* ================= SECTION 3: RINGKASAN TOTAL ================= */}
+        {/* RINGKASAN TOTAL */}
         <div className="order-summary-box">
           <div style={{ textAlign: 'right' }}>
             <span className="order-summary-text">Total Keseluruhan:</span>
-            {/* 🍏 PERBAIKAN: Memanggil properti 'harga' (Grand Total) sesuai entitas Order.java */}
-            <h2 className="order-summary-total" style={{ color: '#16a34a', fontWeight: 'bold' }}>
+            <h2 style={{ color: '#16a34a', fontWeight: 'bold' }}>
               Rp {(orderData.harga || 0).toLocaleString('id-ID')}
             </h2>
           </div>

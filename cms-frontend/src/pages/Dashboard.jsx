@@ -1,81 +1,100 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../css/Dashboard.css';
 import logoImg from '../assets/pl_img.jpeg';
 
-// Import Komponen Sub-Menu
+// Import Sub-Menu Components
 import ManageContent from '../components/ManageContent';
 import ManageInventory from '../components/ManageInventory';
 import ManageOrder from '../components/ManageOrder';
 import ManageInvoice from '../components/ManageInvoice';
 import OrderDetail from '../components/OrderDetail';
 
-// Import Service & Modal Popup
-import { dashboardService } from '../services/dashboardService'; 
+// Import Services, Configs & Global Modals
+import { useDashboardData } from '../hooks/useDashboardData'; 
+import { DEFAULT_TEMPLATE_CONFIG, MENU_STRUCTURE } from '../constant'; 
 import EditBarangModal from '../components/EditBarangModal';
 import OrderDetailModal from '../components/OrderDetailModal';
 
 function Dashboard() {
+  // =================================================================
+  // 1. STATE MANAGEMENT: NAVIGATION & THEME STATE
+  // =================================================================
   const [openMenu, setOpenMenu] = useState('content');
   const [isLightMode, setIsLightMode] = useState(false);
   const [activeTab, setActiveTab] = useState('list-content');
 
-  // 🍏 State Utama Hanya Menyimpan Data Array dari Backend
-  const [posts, setPosts] = useState([]);
-  const [barangList, setBarangList] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-
-  // State Modal Global & Data yang Sedang Dipilih
+  // =================================================================
+  // 2. STATE MANAGEMENT: MODALS & GLOBAL PRINT INVOICE CONFIG
+  // =================================================================
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBarang, setSelectedBarang] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [templateConfig, setTemplateConfig] = useState(DEFAULT_TEMPLATE_CONFIG);
 
-  // State Konfigurasi Template Invoice Tetap di Sini (Global Share)
-  const [templateConfig, setTemplateConfig] = useState({
-    companyName: 'PINARAK LANGGENG',
-    companySlogan: 'Solusi Penyewaan Alat Pesta & Event Terbaik',
-    companyAddress: 'Jl. Raya Pinarak No. 88, Jawa Tengah | Telp: 0812-3456-7890',
-    notes: [
-      'Invoice ini merupakan bukti pembayaran/tagihan resmi yang sah.',
-      'Harap lakukan konfirmasi H-3 sebelum tanggal pelaksanaan acara dimulai.'
-    ],
-    signatureLocation: 'Jawa Tengah',
-    signatureName: 'Admin PL',
-    companyLogo: logoImg
-  });
+  // =================================================================
+  // 3. CUSTOM HOOKS: DATA FETCHING PROCESS
+  // =================================================================
+  const { 
+    posts, 
+    barangList, 
+    orders, 
+    invoices, 
+    loadPosts,    
+    loadBarang,   
+    loadOrders, 
+    loadInvoices 
+  } = useDashboardData();
 
-  // 🍏 Fungsi Tarik Data dari Pusat Service
-  const loadPosts = async () => { try { const data = await dashboardService.fetchPosts(); setPosts(data); } catch (e) { console.error(e); } };
-  const loadBarang = async () => { try { const data = await dashboardService.fetchBarang(); setBarangList(data); } catch (e) { console.error(e); } };
-  const loadOrders = async () => { try { const data = await dashboardService.fetchOrders(); setOrders(data); } catch (e) { console.error(e); } };
-  const loadInvoices = async () => { try { const data = await dashboardService.fetchInvoices(); setInvoices(data); } catch (e) { console.error(e); } };
-
-  useEffect(() => { loadPosts(); loadBarang(); loadOrders(); loadInvoices(); }, []);
-
+  // =================================================================
+  // 4. INTERACTION HANDLERS
+  // =================================================================
   const toggleMenu = (menuName) => setOpenMenu(openMenu === menuName ? '' : menuName);
 
-  // Aksi pembuka modal edit barang
   const handleEditBarang = (barang) => {
     setSelectedBarang(barang);
     setIsEditModalOpen(true);
   };
 
-  // Aksi pembuka modal detail order dari tabel
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
     setIsOrderModalOpen(true);
   };
 
+  // =================================================================
+  // 5. DYNAMIC RENDER CONTROLLER (Fungsi Perapian Utama)
+  // =================================================================
+  const renderMainContent = () => {
+    // Mengecek prefix menu untuk memuat komponen yang sesuai secara dinamis
+    if (activeTab.includes('content')) {
+      return <ManageContent posts={posts} onRefreshPosts={loadPosts} activeTab={activeTab} setActiveTab={setActiveTab} />;
+    }
+    if (activeTab.includes('barang')) {
+      return <ManageInventory barangList={barangList} onRefreshBarang={loadBarang} activeTab={activeTab} onEditBarang={handleEditBarang} />;
+    }
+    if (activeTab.includes('order')) {
+      return <ManageOrder orders={orders} barangList={barangList} onRefreshOrder={loadOrders} activeTab={activeTab} />;
+    }
+    if (activeTab.includes('invoice')) {
+      return <ManageInvoice invoices={invoices} orders={orders} onRefreshInvoice={loadInvoices} activeTab={activeTab} templateConfig={templateConfig} setTemplateConfig={setTemplateConfig} />;
+    }
+    if (activeTab === 'detail-order') {
+      return <OrderDetail orderData={selectedOrder} onBack={() => setActiveTab('list-order')} />;
+    }
+    return <div>Pilih menu di sebelah kiri, cuy.</div>;
+  };
+
   return (
     <div className={`admin-container ${isLightMode ? 'light-theme' : ''}`}>
-      {/* SIDEBAR KIRI */}
+      
+      {/* VIEW SECTION: LEFT SIDEBAR NAVIGATION */}
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <img src={logoImg} alt="Logo" className="sidebar-logo" />
           <h1 className="sidebar-title">Pinarak Langgeng</h1>
         </div>
+        
         <div className="theme-switch-wrapper">
           <span>Dark</span>
           <label className="theme-switch">
@@ -85,103 +104,49 @@ function Dashboard() {
           <span>Light</span>
         </div>
 
+        {/* Looping Dinamis Menu Sidebar */}
         <ul className="sidebar-menu">
-          <li>
-            <div className="menu-item" onClick={() => toggleMenu('content')}><span>📂 Menu Content</span><span>{openMenu === 'content' ? '🔼' : '🔽'}</span></div>
-            {openMenu === 'content' && (
-              <ul className="submenu-list">
-                <li className={`submenu-item ${activeTab === 'create-content' ? 'active' : ''}`} onClick={() => setActiveTab('create-content')}>➕ Create Content</li>
-                <li className={`submenu-item ${activeTab === 'list-content' ? 'active' : ''}`} onClick={() => setActiveTab('list-content')}>📋 List Content</li>
-              </ul>
-            )}
-          </li>
-          <li>
-            <div className="menu-item" onClick={() => toggleMenu('inventory')}><span>🛠️ Menu Inventory</span><span>{openMenu === 'inventory' ? '🔼' : '🔽'}</span></div>
-            {openMenu === 'inventory' && (
-              <ul className="submenu-list">
-                <li className={`submenu-item ${activeTab === 'create-barang' ? 'active' : ''}`} onClick={() => setActiveTab('create-barang')}>➕ Create Barang</li>
-                <li className={`submenu-item ${activeTab === 'list-barang' ? 'active' : ''}`} onClick={() => setActiveTab('list-barang')}>📋 List Barang</li>
-              </ul>
-            )}
-          </li>
-          <li>
-            <div className="menu-item" onClick={() => toggleMenu('order')}><span>📦 Menu Order</span><span>{openMenu === 'order' ? '🔼' : '🔽'}</span></div>
-            {openMenu === 'order' && (
-              <ul className="submenu-list">
-                <li className={`submenu-item ${activeTab === 'create-order' ? 'active' : ''}`} onClick={() => setActiveTab('create-order')}>➕ Create Order</li>
-                <li className={`submenu-item ${activeTab === 'list-order' ? 'active' : ''}`} onClick={() => setActiveTab('list-order')}>📋 List Order</li>
-              </ul>
-            )}
-          </li>
-          <li>
-            <div className="menu-item" onClick={() => toggleMenu('invoice')}><span>🧾 Menu Invoice</span><span>{openMenu === 'invoice' ? '🔼' : '🔽'}</span></div>
-            {openMenu === 'invoice' && (
-              <ul className="submenu-list">
-                <li className={`submenu-item ${activeTab === 'create-invoice' ? 'active' : ''}`} onClick={() => setActiveTab('create-invoice')}>➕ Create Invoice</li>
-                <li className={`submenu-item ${activeTab === 'list-invoice' ? 'active' : ''}`} onClick={() => setActiveTab('list-invoice')}>📋 List Invoice</li>
-                <li className={`submenu-item ${activeTab === 'template-invoice' ? 'active' : ''}`} onClick={() => setActiveTab('template-invoice')}>⚙️ Template Invoice</li>
-              </ul>
-            )}
-          </li>
+          {MENU_STRUCTURE.map((menu) => (
+            <li key={menu.id}>
+              <div className="menu-item" onClick={() => toggleMenu(menu.id)}>
+                <span>{menu.label}</span>
+                <span>{openMenu === menu.id ? '🔼' : '🔽'}</span>
+              </div>
+              {openMenu === menu.id && (
+                <ul className="submenu-list">
+                  {menu.items.map((sub) => (
+                    <li 
+                      key={sub.tabId} 
+                      className={`submenu-item ${activeTab === sub.tabId ? 'active' : ''}`}
+                      onClick={() => setActiveTab(sub.tabId)}
+                    >
+                      {sub.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
         </ul>
-        <div className="sidebar-footer"><Link to="/" className="link-back">🥞 Keluar ke Web Utama</Link></div>
+        
+        <div className="sidebar-footer">
+          <Link to="/" className="link-back">🥞 Keluar ke Web Utama</Link>
+        </div>
       </aside>
 
-      {/* KONTEN KANAN */}
+      {/* VIEW SECTION: RIGHT MAIN CONTENT AREA */}
       <main className="admin-content">
-        <div className="content-header"><h2>Halaman Kendali Admin ({activeTab.replace('-', ' ').toUpperCase()})</h2></div>
+        <div className="content-header">
+          <h2>Halaman Kendali Admin ({activeTab.replace('-', ' ').toUpperCase()})</h2>
+        </div>
 
-        <ManageContent
-          posts={posts}
-          onRefreshPosts={loadPosts}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
-
-        <ManageInventory
-          barangList={barangList}
-          onRefreshBarang={loadBarang}
-          activeTab={activeTab}
-          onEditBarang={handleEditBarang}
-        />
-
-        {/* 🍏 Bersih total dari props state form bawaan */}
-        <ManageOrder 
-          orders={orders} 
-          barangList={barangList} 
-          onRefreshOrder={loadOrders} 
-          activeTab={activeTab} 
-        />
-
-        {/* 🍏 Ringkas karena urusan form input dan parsing ditangani sendiri oleh ManageInvoice */}
-        <ManageInvoice 
-          invoices={invoices} 
-          orders={orders} 
-          onRefreshInvoice={loadInvoices} 
-          activeTab={activeTab} 
-          templateConfig={templateConfig} 
-          setTemplateConfig={setTemplateConfig} 
-        />
-
-        {activeTab === 'detail-order' && (
-          <OrderDetail orderData={selectedOrder} onBack={() => setActiveTab('list-order')} />
-        )}
+        {/* 🍏 Bersih dan Efisien: Hanya memuat komponen yang sedang aktif */}
+        {renderMainContent()}
       </main>
 
-      {/* MODAL WINDOW POPUP GLOBAL */}
-      <EditBarangModal
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        barangData={selectedBarang}
-        onRefresh={loadBarang}
-      />
-
-      <OrderDetailModal 
-        isOpen={isOrderModalOpen} 
-        onClose={() => setIsOrderModalOpen(false)} 
-        orderData={selectedOrder} 
-        onRefresh={loadOrders} 
-      />
+      {/* VIEW SECTION: BACKGROUND OVERLAY GLOBAL MODALS WINDOWS */}
+      <EditBarangModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} barangData={selectedBarang} onRefresh={loadBarang} />
+      <OrderDetailModal isOpen={isOrderModalOpen} onClose={() => setIsOrderModalOpen(false)} orderData={selectedOrder} onRefresh={loadOrders} />
     </div>
   );
 }

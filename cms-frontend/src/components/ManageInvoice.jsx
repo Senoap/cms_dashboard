@@ -1,114 +1,32 @@
-import { useState, useEffect } from 'react';
-import { invoiceService } from '../services/invoiceService'; // 🍏 Import service baru
-import { formatSecureInvoiceNumber as formatInvoiceNumber } from '../utils/securityHelper'; // 🔒 Keamanan nomor invoice
+import { useManageInvoice } from '../hooks/useManageInvoice';
 
 function ManageInvoice({
   invoices, orders, onRefreshInvoice, activeTab,
   templateConfig, setTemplateConfig
 }) {
-  // 🍏 ISOLASI STATE FORM: Mengatur data input lokal di dalam komponen[cite: 10]
-  const [selectedOrderId, setSelectedOrderId] = useState('');
-  const [tanggalInvoice, setTanggalInvoice] = useState('');
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // 🍏 Mengisolasi puluhan state form dan fungsi utilitas ke custom hook lokal
+  const {
+    selectedOrderId,
+    setSelectedOrderId,
+    tanggalInvoice,
+    setTanggalInvoice,
+    selectedInvoice,
+    setSelectedInvoice,
+    loading,
+    templateForm,
+    todayDate,
+    handleTemplateInputChange,
+    handleLogoChange,
+    handleNoteChange,
+    addNoteField,
+    removeNoteField,
+    handleSaveTemplate,
+    handleCreateInvoice,
+    handlePrint,
+    formatInvoiceNumber
+  } = useManageInvoice(invoices, onRefreshInvoice, templateConfig, setTemplateConfig);
 
-  // State lokal untuk konfigurasi template cetak[cite: 10]
-  const [tempCompanyName, setTempCompanyName] = useState(templateConfig.companyName);
-  const [tempCompanySlogan, setTempCompanySlogan] = useState(templateConfig.companySlogan);
-  const [tempCompanyAddress, setTempCompanyAddress] = useState(templateConfig.companyAddress);
-  const [tempSignatureLocation, setTempSignatureLocation] = useState(templateConfig.signatureLocation);
-  const [tempSignatureName, setTempSignatureName] = useState(templateConfig.signatureName);
-  const [tempNotes, setTempNotes] = useState([...templateConfig.notes]);
-  const [tempCompanyLogo, setTempCompanyLogo] = useState(templateConfig.companyLogo);
-
-  const todayDate = new Date().toISOString().split('T')[0];
-
-  useEffect(() => {
-    setTempNotes([...templateConfig.notes]);
-    setTempSignatureName(templateConfig.signatureName);
-    setTempSignatureLocation(templateConfig.signatureLocation);
-    setTempCompanyLogo(templateConfig.companyLogo);
-  }, [templateConfig.notes, templateConfig.signatureName, templateConfig.signatureLocation, templateConfig.companyLogo]);
-
-  const handlePrint = () => { window.print(); };
-
-  // Konversi file logo ke format Base64 secara instan[cite: 10]
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setTempCompanyLogo(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleNoteChange = (index, value) => {
-    const updatedNotes = [...tempNotes];
-    updatedNotes[index] = value;
-    setTempNotes(updatedNotes);
-  };
-
-  const addNoteField = () => { setTempNotes([...tempNotes, '']); };
-
-  const removeNoteField = (index) => {
-    const updatedNotes = tempNotes.filter((_, i) => i !== index);
-    setTempNotes(updatedNotes);
-  };
-
-  const handleSaveTemplate = async (e) => {
-    e.preventDefault();
-    const updatedData = {
-      companyName: tempCompanyName,
-      companySlogan: tempCompanySlogan,
-      companyAddress: tempCompanyAddress,
-      signatureLocation: tempSignatureLocation,
-      signatureName: tempSignatureName,
-      companyLogo: tempCompanyLogo,
-      notes: tempNotes.filter(note => note.trim() !== '')
-    };
-
-    setTemplateConfig(updatedData);
-    alert("Template Invoice & Logo berhasil diperbarui!");
-  };
-
-  // 🍏 Fungsi Menerbitkan Invoice via Service (Sudah Ditambahkan noInvoice)
-  const handleCreateInvoice = async (e) => {
-    e.preventDefault();
-    if (!selectedOrderId || !tanggalInvoice) return alert("Pilih order dan tanggal dulu, cuy!");
-
-    setLoading(true);
-    try {
-      const numericOrderId = Number(selectedOrderId);
-
-      // 🔒 GENERATE NOMOR INVOICE SECARA REAL (Misal: INV/2026/VII/004)
-      // Fungsi ini memakai helper formatInvoiceNumber bawaan lu yang sudah ter-import di atas
-      const generatedNoInvoice = formatInvoiceNumber(numericOrderId, tanggalInvoice);
-
-      const payload = {
-        id: numericOrderId,
-        tanggalInvoice: tanggalInvoice,
-        noInvoice: generatedNoInvoice, // 🍏 PERBAIKAN: Masukkan properti ini agar lolos validasi not-null database
-        order: { id: numericOrderId }
-      };
-
-      await invoiceService.create(payload); // Tembak API
-      alert("Invoice berhasil diterbitkan!");
-      
-      // Reset parameter input
-      setSelectedOrderId('');
-      setTanggalInvoice('');
-      onRefreshInvoice(); // Hubungi parent untuk tarik data terupdate
-    } catch (err) {
-      console.error(err);
-      alert("Gagal menerbitkan invoice!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- SUBMENU: CONFIG TEMPLATE INVOICE (LIVE PREVIEW) ---[cite: 10]
+  // --- SUBMENU: CONFIG TEMPLATE INVOICE (LIVE PREVIEW) ---
   if (activeTab === 'template-invoice') {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '30px', alignItems: 'start', maxWidth: '1400px', margin: '0 auto' }}>
@@ -128,27 +46,27 @@ function ManageInvoice({
 
             <div className="form-group-premium">
               <label>Nama Perusahaan / Bisnis</label>
-              <input type="text" value={tempCompanyName} onChange={e => setTempCompanyName(e.target.value)} required />
+              <input type="text" name="companyName" value={templateForm.companyName} onChange={handleTemplateInputChange} required />
             </div>
 
             <div className="form-group-premium">
               <label>Slogan / Deskripsi Bisnis</label>
-              <input type="text" value={tempCompanySlogan} onChange={e => setTempCompanySlogan(e.target.value)} required />
+              <input type="text" name="companySlogan" value={templateForm.companySlogan} onChange={handleTemplateInputChange} required />
             </div>
 
             <div className="form-group-premium">
               <label>Alamat & Kontak Perusahaan</label>
-              <input type="text" value={tempCompanyAddress} onChange={e => setTempCompanyAddress(e.target.value)} required />
+              <input type="text" name="companyAddress" value={templateForm.companyAddress} onChange={handleTemplateInputChange} required />
             </div>
 
             <div className="form-group-premium">
               <label>Kota / Lokasi Tanda Tangan (Kaki Kanan)</label>
-              <input type="text" value={tempSignatureLocation} onChange={e => setTempSignatureLocation(e.target.value)} required />
+              <input type="text" name="signatureLocation" value={templateForm.signatureLocation} onChange={handleTemplateInputChange} required />
             </div>
 
             <div className="form-group-premium">
               <label>Nama di Tanda Tangan</label>
-              <input type="text" value={tempSignatureName} onChange={e => setTempSignatureName(e.target.value)} required />
+              <input type="text" name="signatureName" value={templateForm.signatureName} onChange={handleTemplateInputChange} required />
             </div>
 
             <div className="form-group-premium" style={{ gap: '12px' }}>
@@ -164,11 +82,11 @@ function ManageInvoice({
                 </button>
               </div>
 
-              {tempNotes.map((note, index) => (
+              {templateForm.notes.map((note, index) => (
                 <div key={index} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <span style={{ color: '#888', fontWeight: 'bold', fontSize: '14px', minWidth: '20px' }}>{index + 1}.</span>
                   <input type="text" value={note} onChange={e => handleNoteChange(index, e.target.value)} required />
-                  {tempNotes.length > 1 && (
+                  {templateForm.notes.length > 1 && (
                     <button type="button" onClick={() => removeNoteField(index)} style={{ background: 'rgba(231, 76, 60, 0.15)', color: '#e74c3c', border: '1px solid rgba(231, 76, 60, 0.3)', padding: '12px', borderRadius: '8px', cursor: 'pointer' }}>❌</button>
                   )}
                 </div>
@@ -187,11 +105,11 @@ function ManageInvoice({
           <div className="invoice-paper" style={{ transform: 'scale(0.95)', transformOrigin: 'top center', boxShadow: '0 10px 40px rgba(0,0,0,0.2)' }}>
             <div className="invoice-paper-header">
               <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                {tempCompanyLogo && <img src={tempCompanyLogo} alt="Logo Perusahaan" style={{ width: '65px', height: '65px', objectFit: 'contain' }} />}
+                {templateForm.companyLogo && <img src={templateForm.companyLogo} alt="Logo Perusahaan" style={{ width: '65px', height: '65px', objectFit: 'contain' }} />}
                 <div className="company-info">
-                  <h2>{tempCompanyName}</h2>
-                  <p>{tempCompanySlogan}</p>
-                  <p className="company-subtext">{tempCompanyAddress}</p>
+                  <h2>{templateForm.companyName}</h2>
+                  <p>{templateForm.companySlogan}</p>
+                  <p className="company-subtext">{templateForm.companyAddress}</p>
                 </div>
               </div>
               <div className="invoice-title-meta">
@@ -237,14 +155,14 @@ function ManageInvoice({
             <div className="invoice-paper-footer">
               <div className="notes">
                 <h4>Catatan Penting:</h4>
-                {tempNotes.map((note, index) => (
+                {templateForm.notes.map((note, index) => (
                   note.trim() !== '' && <p key={index}>{index + 1}. {note}</p>
                 ))}
               </div>
               <div className="signature-space">
-                <p>{tempSignatureLocation}, {todayDate}</p>
+                <p>{templateForm.signatureLocation}, {todayDate}</p>
                 <br /><br /><br />
-                <p><strong>( Hormat Kami, {tempSignatureName} )</strong></p>
+                <p><strong>( Hormat Kami, {templateForm.signatureName} )</strong></p>
               </div>
             </div>
           </div>
@@ -254,7 +172,7 @@ function ManageInvoice({
     );
   }
 
-  // --- SUBMENU: CREATE INVOICE ---[cite: 10]
+  // --- SUBMENU: CREATE INVOICE ---
   if (activeTab === 'create-invoice') {
     return (
       <div className="form-container-premium">
@@ -292,7 +210,7 @@ function ManageInvoice({
     );
   }
 
-  // --- SUBMENU: LIST INVOICE ---[cite: 10]
+  // --- SUBMENU: LIST INVOICE ---
   if (activeTab === 'list-invoice') {
     return (
       <div className="table-container-premium">
@@ -394,7 +312,6 @@ function ManageInvoice({
                 </div>
               </div>
 
-              {/* 🍏 MEMBAIKI RENDER DAFTAR BARANG YANG DIPESAN SECARA REAL */}
               <table className="invoice-items-table">
                 <thead>
                   <tr>

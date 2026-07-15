@@ -1,60 +1,18 @@
-import { useState } from 'react';
-import { barangService } from '../services/barangService'; // 🍏 Menggunakan service yang sama
+import { useManageInventory } from '../hooks/useManageInventory';
 
 function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang }) {
-  const [newNamaBarang, setNewNamaBarang] = useState('');
-  const [hargaBarang, setHargaBarang] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  // State pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = barangList.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(barangList.length / itemsPerPage);
-
-  // Handle Tambah Barang Langsung via Service
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const payload = {
-        nmBarang: newNamaBarang,
-        harga: parseInt(hargaBarang, 10) || 0
-      };
-
-      await barangService.create(payload);
-      alert('Barang berhasil ditambahkan!');
-      
-      // Reset form & refresh data ke dashboard utama
-      setNewNamaBarang('');
-      setHargaBarang('');
-      onRefreshBarang();
-    } catch (err) {
-      console.error(err);
-      alert('Gagal menambah barang baru, cuy!');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle Hapus Barang Langsung via Service
-  const handleDeleteClick = async (id, nama) => {
-    const yakin = window.confirm(`Apakah Anda yakin ingin menghapus barang "${nama}"?`);
-    if (!yakin) return;
-
-    try {
-      await barangService.delete(id);
-      alert('Barang berhasil dihapus!');
-      onRefreshBarang();
-    } catch (err) {
-      console.error(err);
-      alert('Gagal menghapus barang!');
-    }
-  };
+  // 🍏 Mengisolasi state form dan tabel ke custom hook lokal
+  const {
+    formData,
+    loading,
+    currentPage,
+    currentItems,
+    totalPages,
+    setCurrentPage,
+    handleInputChange,
+    handleSubmit,
+    handleDeleteClick
+  } = useManageInventory(barangList, onRefreshBarang);
 
   if (activeTab === 'create-barang') {
     return (
@@ -69,9 +27,10 @@ function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang 
             <label>Nama Barang / Aset</label>
             <input
               type="text"
+              name="newNamaBarang" // 🍏 Harus cocok dengan properti di hook
               placeholder="Contoh: Kursi Futura, Tenda Sarnafil VIP"
-              value={newNamaBarang}
-              onChange={e => setNewNamaBarang(e.target.value)}
+              value={formData.newNamaBarang}
+              onChange={handleInputChange}
               required
             />
           </div>
@@ -80,9 +39,10 @@ function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang 
             <label>Harga Sewa (Rp)</label>
             <input
               type="number"
+              name="hargaBarang" // 🍏 Harus cocok dengan properti di hook
               placeholder="Contoh: 50000"
-              value={hargaBarang}
-              onChange={e => setHargaBarang(e.target.value)}
+              value={formData.hargaBarang}
+              onChange={handleInputChange}
               required
             />
           </div>

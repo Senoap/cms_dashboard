@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { barangService } from '../services/barangService';
 import '../css/EditBarangModal.css';
 
 export default function EditBarangModal({ isOpen, onClose, barangData, onRefresh }) {
+  // =================================================================
+  // 1. STATE MANAGEMENT
+  // =================================================================
   const [formEdit, setFormEdit] = useState({ id: '', nmBarang: '', harga: '' });
   const [loading, setLoading] = useState(false);
 
+  // =================================================================
+  // 2. LIFECYCLE EFFECT: SYNC DATA FROM PARENT PROPERTIES
+  // =================================================================
   useEffect(() => {
     if (barangData) {
       setFormEdit({
@@ -18,18 +24,28 @@ export default function EditBarangModal({ isOpen, onClose, barangData, onRefresh
 
   if (!isOpen) return null;
 
+  // =================================================================
+  // 3. INTERACTION HANDLERS (Fungsi Input & Submit)
+  // =================================================================
+  // 🍏 Gabung handler input menjadi satu fungsi dinamis berbasis nama atribut
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormEdit((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      const payloadKeBackend = {
+      const payload = {
         nmBarang: formEdit.nmBarang,
         harga: parseInt(formEdit.harga, 10) || 0 
       };
 
-      const result = await barangService.update(formEdit.id, payloadKeBackend);
-      
+      const result = await barangService.update(formEdit.id, payload);
       alert(result.message || "Barang berhasil diperbarui!");
+      
       onRefresh();
       onClose();
     } catch (err) {
@@ -50,8 +66,9 @@ export default function EditBarangModal({ isOpen, onClose, barangData, onRefresh
             <label>Nama Barang</label>
             <input
               type="text"
+              name="nmBarang" // 🍏 Harus cocok dengan properti di state formEdit
               value={formEdit.nmBarang}
-              onChange={(e) => setFormEdit({ ...formEdit, nmBarang: e.target.value })}
+              onChange={handleInputChange}
               required
             />
           </div>
@@ -60,8 +77,9 @@ export default function EditBarangModal({ isOpen, onClose, barangData, onRefresh
             <label>Harga Sewa (Rp)</label>
             <input
               type="number"
+              name="harga" // 🍏 Harus cocok dengan properti di state formEdit
               value={formEdit.harga}
-              onChange={(e) => setFormEdit({ ...formEdit, harga: e.target.value })}
+              onChange={handleInputChange}
               required
             />
           </div>

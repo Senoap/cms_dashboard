@@ -1,110 +1,19 @@
-import { useState } from 'react';
-import { orderService } from '../services/orderService'; // 🍏 Import service baru
-import OrderListView from './OrderListView'; // 🍏 Import komponen tabel yang baru dibuat
+import { useManageOrder } from '../hooks/useManageOrder';
+import OrderListView from './OrderListView';
 
 function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
-  // 🍏 ISOLASI STATE: Semua form input di-manage di sini sekarang
-  const [selectedBarangId, setSelectedBarangId] = useState('');
-  const [jumlah, setJumlah] = useState('');
-  const [tanggalPesan, setTanggalPesan] = useState('');
-  const [tanggalAcara, setTanggalAcara] = useState('');
-  const [pemesan, setPemesan] = useState('');
-  const [noHpPemesan, setNoHpPemesan] = useState('');
-  const [alamat, setAlamat] = useState('');
-
-  const [cart, setCart] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  // 🍏 Fungsi nambah barang ke keranjang
-  const handleAddToCart = (e) => {
-    e.preventDefault();
-    if (!selectedBarangId || !jumlah || parseInt(jumlah, 10) <= 0) {
-      alert("Pilih barang dan isi jumlah kuantitas yang valid dulu, cuy!");
-      return;
-    }
-
-    const targetBarang = barangList.find(b => String(b.id) === String(selectedBarangId));
-    if (!targetBarang) return;
-
-    const qty = parseInt(jumlah, 10);
-    const hargaSatuan = parseInt(targetBarang.harga, 10) || 0;
-    const subTotal = hargaSatuan * qty;
-
-    const existingIndex = cart.findIndex(item => String(item.barangId) === String(targetBarang.id));
-
-    if (existingIndex > -1) {
-      const updatedCart = [...cart];
-      updatedCart[existingIndex].jumlah += qty;
-      updatedCart[existingIndex].subTotal += subTotal;
-      setCart(updatedCart);
-    } else {
-      setCart([...cart, {
-        barangId: targetBarang.id,
-        nmBarang: targetBarang.nmBarang,
-        hargaSatuan: hargaSatuan,
-        jumlah: qty,
-        subTotal: subTotal
-      }]);
-    }
-
-    // Reset input barang & kuantitas
-    setSelectedBarangId('');
-    setJumlah('');
-  };
-
-  // 🍏 Fungsi hapus baris dari keranjang
-  const handleRemoveFromCart = (indexToDrop) => {
-    setCart(cart.filter((_, idx) => idx !== indexToDrop));
-  };
-
-  // 🍏 Hitung total harga saat ini di keranjang
-  const grandTotal = cart.reduce((sum, item) => sum + item.subTotal, 0);
-
-  // 🍏 Fungsi kirim data ke Backend via Service
-  // 🍏 Ganti fungsi handleSubmitOrder bawaan lu dengan ini:
-  const handleSubmitOrder = async (e) => {
-    e.preventDefault();
-    if (cart.length === 0) return alert("Keranjang belanja kosong! Isi barang dulu cuy.");
-
-    setLoading(true);
-    try {
-      const payload = {
-        tanggalPesan, //
-        tanggalAcara, //
-        pemesan, //
-        noHpPemesan, //
-        alamat,
-        harga: grandTotal, //
-        // 🍏 PERBAIKAN UTAMA: Sesuaikan struktur item keranjang
-        details: cart.map(item => ({
-          barang: {
-            id: item.barangId
-          },
-          jumlah: item.jumlah,
-          subTotal: item.subTotal
-        }))
-      };
-
-      await orderService.create(payload); //[cite: 5]
-      alert("Transaksi Order Berhasil Disimpan!");
-
-      // Reset semua form & keranjang[cite: 5]
-      setCart([]); //[cite: 5]
-      setTanggalPesan(''); //[cite: 5]
-      setTanggalAcara(''); //[cite: 5]
-      setPemesan(''); //[cite: 5]
-      setNoHpPemesan(''); //[cite: 5]
-      setAlamat('');
-
-      // Refresh data list order di parent[cite: 5]
-      onRefreshOrder(); //[cite: 5]
-    } catch (err) {
-      console.error(err);
-      alert("Gagal menyimpan transaksi order!");
-    } finally {
-      setLoading(false); //[cite: 5]
-    }
-  };
+  const {
+    itemInput,
+    customerForm,
+    cart,
+    loading,
+    grandTotal,
+    handleItemInputChange,
+    handleCustomerInputChange,
+    handleAddToCart,
+    handleRemoveFromCart,
+    handleSubmitOrder
+  } = useManageOrder(barangList, onRefreshOrder);
 
   if (activeTab === 'create-order') {
     return (
@@ -118,7 +27,7 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
           {/* AREA 1: INPUT BARANG & QUANTITY */}
           <div className="form-group-premium">
             <label>Pilih Barang / Aset</label>
-            <select value={selectedBarangId} onChange={e => setSelectedBarangId(e.target.value)}>
+            <select name="selectedBarangId" value={itemInput.selectedBarangId} onChange={handleItemInputChange}>
               <option value="">-- Silakan Pilih Barang --</option>
               {barangList.map(b => (
                 <option key={b.id} value={b.id}>{b.nmBarang} (Rp {b.harga?.toLocaleString('id-ID')})</option>
@@ -128,7 +37,7 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
 
           <div className="form-group-premium">
             <label>Jumlah Pesanan (Pcs)</label>
-            <input type="number" placeholder="Masukkan jumlah pesanan..." value={jumlah} onChange={e => setJumlah(e.target.value)} />
+            <input type="number" name="jumlah" placeholder="Masukkan jumlah pesanan..." value={itemInput.jumlah} onChange={handleItemInputChange} />
           </div>
 
           <button
@@ -179,31 +88,32 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div className="form-group-premium">
                 <label>Tanggal Pesan</label>
-                <input type="date" value={tanggalPesan} onChange={e => setTanggalPesan(e.target.value)} required />
+                <input type="date" name="tanggalPesan" value={customerForm.tanggalPesan} onChange={handleCustomerInputChange} required />
               </div>
               <div className="form-group-premium">
                 <label>Tanggal Acara</label>
-                <input type="date" value={tanggalAcara} onChange={e => setTanggalAcara(e.target.value)} required />
+                <input type="date" name="tanggalAcara" value={customerForm.tanggalAcara} onChange={handleCustomerInputChange} required />
               </div>
             </div>
 
             <div className="form-group-premium">
               <label>Nama Lengkap Pemesan</label>
-              <input type="text" placeholder="Contoh: Bapak Budi" value={pemesan} onChange={e => setPemesan(e.target.value)} required />
+              <input type="text" name="pemesan" placeholder="Contoh: Bapak Budi" value={customerForm.pemesan} onChange={handleCustomerInputChange} required />
             </div>
 
             <div className="form-group-premium">
               <label>Nomor HP / WhatsApp</label>
-              <input type="text" placeholder="Contoh: 081234567xxx" value={noHpPemesan} onChange={e => setNoHpPemesan(e.target.value)} required />
+              <input type="text" name="noHpPemesan" placeholder="Contoh: 081234567xxx" value={customerForm.noHpPemesan} onChange={handleCustomerInputChange} required />
             </div>
 
             <div className="form-group-premium">
               <label>Alamat Pengiriman</label>
               <textarea
+                name="alamat"
                 className="form-input-premium"
                 placeholder="Masukkan alamat lokasi acara..."
-                value={alamat}
-                onChange={(e) => setAlamat(e.target.value)}
+                value={customerForm.alamat}
+                onChange={handleCustomerInputChange}
                 required
               />
             </div>
@@ -219,14 +129,8 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
     );
   }
 
-  // 🍏 Ganti blok list-order di ManageOrder.jsx dengan kode ringkas ini:
   if (activeTab === 'list-order') {
-    return (
-      <OrderListView
-        orders={orders}
-        onRefreshOrder={onRefreshOrder}
-      />
-    );
+    return <OrderListView orders={orders} onRefreshOrder={onRefreshOrder} />;
   }
 
   return null;

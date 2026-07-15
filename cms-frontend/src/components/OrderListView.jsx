@@ -1,37 +1,33 @@
-import React, { useState } from 'react';
-import OrderDetailModal from './OrderDetailModal'; // Pastikan path file modal lu sudah benar[cite: 3]
+import { useState } from 'react';
+import OrderDetailModal from './OrderDetailModal'; 
 import '../css/OrderModal.css';
 import { orderService } from '../services/orderService';
 
 function OrderListView({ orders, onRefreshOrder }) {
-    // State internal untuk mengontrol modal detail[cite: 3]
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false); //[cite: 3]
-    // 🍏 State untuk tracking ID yang sedang dihapus (efek loading)
+    const [isModalOpen, setIsModalOpen] = useState(false); 
     const [deletingId, setDeletingId] = useState(null);
 
-    // Fungsi saat tombol View diklik[cite: 3]
     const handleViewClick = (order) => {
-        setSelectedOrder(order); //[cite: 3]
-        setIsModalOpen(true); //[cite: 3]
+        setSelectedOrder(order); 
+        setIsModalOpen(true); 
     };
 
     const handleUpdateOrder = (updatedData) => {
-        console.log("Data diperbarui:", updatedData); //[cite: 3]
-        setIsModalOpen(false); //[cite: 3]
-        if (typeof onRefreshOrder === 'function') onRefreshOrder(); //[cite: 3]
+        console.log("Data diperbarui:", updatedData); 
+        setIsModalOpen(false); 
+        if (typeof onRefreshOrder === 'function') onRefreshOrder(); 
     };
 
     const handleDeleteClick = async (id, name) => {
         const konfirmasi = window.confirm(`Apakah lu yakin mau menghapus transaksi atas nama "${name}"? Semua detail item belanjaan juga bakal ikut kehapus permanen, cuy.`);
-
         if (!konfirmasi) return;
 
         setDeletingId(id);
         try {
             await orderService.delete(id);
             alert("Transaksi order berhasil dihapus!");
-            if (typeof onRefreshOrder === 'function') onRefreshOrder(); // Refresh data list tabel
+            if (typeof onRefreshOrder === 'function') onRefreshOrder(); 
         } catch (err) {
             console.error(err);
             alert("Gagal menghapus transaksi order!");
@@ -75,13 +71,7 @@ function OrderListView({ orders, onRefreshOrder }) {
                                             type="button"
                                             onClick={() => handleViewClick(ord)}
                                             className="btn-submit-premium"
-                                            style={{
-                                                padding: '6px 12px',
-                                                fontSize: '12px',
-                                                backgroundColor: '#0284c7',
-                                                margin: 0,
-                                                width: 'auto'
-                                            }}
+                                            style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#0284c7', margin: 0, width: 'auto' }}
                                         >
                                             👁️ View
                                         </button>
@@ -90,13 +80,7 @@ function OrderListView({ orders, onRefreshOrder }) {
                                             onClick={() => handleDeleteClick(ord.id, ord.pemesan)}
                                             disabled={deletingId === ord.id}
                                             className="btn-submit-premium"
-                                            style={{
-                                                padding: '6px 12px',
-                                                fontSize: '12px',
-                                                backgroundColor: '#dc2626',
-                                                margin: 0,
-                                                width: 'auto'
-                                            }}
+                                            style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#dc2626', margin: 0, width: 'auto' }}
                                         >
                                             {deletingId === ord.id ? "⏳..." : "🗑️ Hapus"}
                                         </button>
@@ -108,14 +92,13 @@ function OrderListView({ orders, onRefreshOrder }) {
                 </table>
             </div>
 
-            {/* 🍏 SEKARANG MENGGUNAKAN CLASSNAME CSS DARI FILE TERPISAH */}
             {isModalOpen && (
                 <div className="modal-overlay-custom">
                     <OrderDetailModal
-                        isOpen={isModalOpen} //[cite: 3]
-                        onClose={() => setIsModalOpen(false)} //[cite: 3]
-                        orderData={selectedOrder} //[cite: 3]
-                        onUpdateOrder={handleUpdateOrder} //[cite: 3]
+                        isOpen={isModalOpen} 
+                        onClose={() => setIsModalOpen(false)} 
+                        orderData={selectedOrder} 
+                        onUpdateOrder={handleUpdateOrder} 
                     />
                 </div>
             )}
