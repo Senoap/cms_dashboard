@@ -4,26 +4,12 @@ function ManageInvoice({
   invoices, orders, onRefreshInvoice, activeTab,
   templateConfig, setTemplateConfig
 }) {
-  // 🍏 Mengisolasi puluhan state form dan fungsi utilitas ke custom hook lokal
   const {
-    selectedOrderId,
-    setSelectedOrderId,
-    tanggalInvoice,
-    setTanggalInvoice,
-    selectedInvoice,
-    setSelectedInvoice,
-    loading,
-    templateForm,
-    todayDate,
-    handleTemplateInputChange,
-    handleLogoChange,
-    handleNoteChange,
-    addNoteField,
-    removeNoteField,
-    handleSaveTemplate,
-    handleCreateInvoice,
-    handlePrint,
-    formatInvoiceNumber
+    selectedOrderId, setSelectedOrderId, tanggalInvoice, setTanggalInvoice,
+    selectedInvoice, setSelectedInvoice, loading, templateForm, todayDate,
+    handleTemplateInputChange, handleLogoChange, handleNoteChange,
+    addNoteField, removeNoteField, handleSaveTemplate, handleCreateInvoice,
+    handlePrint, formatInvoiceNumber, updateStatus // <--- updateStatus sudah masuk
   } = useManageInvoice(invoices, onRefreshInvoice, templateConfig, setTemplateConfig);
 
   // --- SUBMENU: CONFIG TEMPLATE INVOICE (LIVE PREVIEW) ---
@@ -125,13 +111,13 @@ function ManageInvoice({
                 <h4>Ditagihkan Kepada:</h4>
                 <h3>[Nama Pelanggan Contoh]</h3>
                 <p><strong>No. HP / WA:</strong> 081234567xxx</p>
-                <p><strong>Alamat:</strong> {selectedInvoice.order && selectedInvoice.order.alamat ? selectedInvoice.order.alamat : '-'}</p>
+                <p><strong>Alamat:</strong> {selectedInvoice?.order?.alamat ?? '-'}</p>
               </div>
               <div className="event-details">
                 <h4>Detail Pelaksanaan Acara:</h4>
                 <p><strong>Tanggal Order:</strong> {todayDate}</p>
                 <p><strong>Tanggal Acara:</strong> {todayDate}</p>
-                <p><strong>Lokasi Acara:</strong> {selectedInvoice.order && selectedInvoice.order.lokasiAcara ? selectedInvoice.order.lokasiAcara : (selectedInvoice.order && selectedInvoice.order.alamat ? selectedInvoice.order.alamat : '-')}</p>
+                <p><strong>Lokasi Acara:</strong> {selectedInvoice?.order?.lokasiAcara ?? '-'}</p>
               </div>
             </div>
 
@@ -173,44 +159,6 @@ function ManageInvoice({
     );
   }
 
-  // --- SUBMENU: CREATE INVOICE ---
-  if (activeTab === 'create-invoice') {
-    return (
-      <div className="form-container-premium">
-        <div className="form-header-premium">
-          <h3>🧾 Generate Invoice / Tagihan</h3>
-          <p>Terbitkan tagihan baru berdasarkan ID Order yang sudah ada.</p>
-        </div>
-
-        <form onSubmit={handleCreateInvoice} className="form-body-premium">
-          <div className="form-group-premium">
-            <label>Pilih Transaksi Order</label>
-            <select value={selectedOrderId} onChange={e => setSelectedOrderId(e.target.value)} required>
-              <option value="">-- Pilih Order Aktif --</option>
-              {orders
-                .filter(ord => !invoices.some(inv => inv.orderId === ord.id))
-                .map(ord => (
-                  <option key={ord.id} value={ord.id}>
-                    Order #{ord.id} - {ord.pemesan}
-                  </option>
-                ))
-              }
-            </select>
-          </div>
-          <div className="form-group-premium">
-            <label>Tanggal Penerbitan Invoice</label>
-            <input type="date" value={tanggalInvoice} onChange={e => setTanggalInvoice(e.target.value)} required />
-          </div>
-          <div className="form-input-premium">
-            <button type="submit" disabled={loading} className="btn-premium-primary">
-              {loading ? "Memproses..." : "🧾 Cetak & Terbitkan Invoice"}
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
   // --- SUBMENU: LIST INVOICE ---
   if (activeTab === 'list-invoice') {
     return (
@@ -221,53 +169,52 @@ function ManageInvoice({
               <h3>📋 Daftar Invoice Cetak</h3>
               <p>Riwayat seluruh tagihan yang telah dicetak dan diterbitkan.</p>
             </div>
+
             <div className="table-responsive-premium">
               <table className="crud-table-premium">
                 <thead>
                   <tr>
-                    <th>No. Tagihan</th>
-                    <th>Ref Order</th>
-                    <th>Nama Pelanggan</th>
-                    <th>Tanggal Terbit</th>
-                    <th style={{ textAlign: 'right' }}>Total Tagihan</th>
-                    <th style={{ width: '150px', textAlign: 'center' }}>Aksi</th>
+                    <th style={{ width: '12%' }}>No. Tagihan</th>
+                    <th style={{ width: '8%' }}>Ref Order</th>
+                    <th style={{ width: '15%' }}>Status</th>
+                    <th style={{ width: '15%' }}>Nama Pelanggan</th>
+                    <th style={{ width: '10%' }}>Tanggal</th>
+                    <th style={{ width: '12%', textAlign: 'right' }}>Total</th>
+                    <th style={{ width: '10%', textAlign: 'center' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {invoices.map((item, index) => {
-                    const invoiceNumber = item.noInvoice || (typeof formatInvoiceNumber === 'function'
-                      ? formatInvoiceNumber(item.orderId || (item.order ? item.order.id : '0'), item.tanggalInvoice)
-                      : 'INV-Error');
-
-                    const orderId = item.orderId || (item.order ? item.order.id : index);
+                    const invoiceNumber = item.noInvoice || formatInvoiceNumber(item.orderId || (item.order?.id || '0'), item.tanggalInvoice);
+                    const orderId = item.orderId || item.order?.id || index;
 
                     return (
-                      <tr key={`${orderId}-${index}`} className="border-b hover:bg-gray-50 text-gray-700">
-                        <td className="p-3 font-semibold text-blue-600">
-                          {invoiceNumber}
-                        </td>
-                        <td className="p-3 font-medium text-gray-600">
-                          ORD-#{orderId}
-                        </td>
+                      <tr key={`${orderId}-${index}`} className="border-b hover:bg-gray-50">
+                        <td className="p-3 font-semibold text-blue-600">{invoiceNumber}</td>
+                        <td className="p-3">ORD-#{orderId}</td>
+
+                        {/* Status Dropdown */}
                         <td className="p-3">
-                          {item.order && item.order.pemesan ? item.order.pemesan : 'N/A'}
+                          <select
+                            value={item.order?.statusTagihan || "Belum Tertagih"}
+                            onChange={(e) => updateStatus(orderId, e.target.value)}
+                            style={{ width: '100%', padding: '5px', borderRadius: '4px' }}
+                          >
+                            <option value="Belum Tertagih">Belum Tertagih</option>
+                            <option value="Proses Tagih">Proses Tagih</option>
+                            <option value="Tertagih">Tertagih</option>
+                          </select>
                         </td>
-                        <td className="p-3">
-                          {item.tanggalInvoice}
-                        </td>
+
+                        <td className="p-3">{item.order?.pemesan || 'N/A'}</td>
+                        <td className="p-3">{item.tanggalInvoice}</td>
                         <td className="p-3 text-right font-bold text-green-600">
-                          Rp {item.order && item.order.harga ? item.order.harga.toLocaleString('id-ID') : 0}
+                          Rp {item.order?.harga?.toLocaleString('id-ID') || 0}
                         </td>
                         <td className="p-3 text-center">
-                          {/* 🍏 DIBUNGKUS WRAPPER FLEX DAN STANDARDISASI TOMBOL AKSI TABEL */}
-                          <div className="table-actions-premium">
-                            <button
-                              className="btn-premium-info"
-                              onClick={() => setSelectedInvoice(item)}
-                            >
-                              👁️ Lihat / Cetak
-                            </button>
-                          </div>
+                          <button className="btn-premium-info" onClick={() => setSelectedInvoice(item)}>
+                            👁️ Lihat
+                          </button>
                         </td>
                       </tr>
                     );

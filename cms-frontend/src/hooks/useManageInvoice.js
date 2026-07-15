@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { invoiceService } from '../services/invoiceService';
 import { formatSecureInvoiceNumber as formatInvoiceNumber } from '../utils/securityHelper';
+import api from '../services/api';
 
 export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, setTemplateConfig) {
   const [selectedOrderId, setSelectedOrderId] = useState('');
@@ -95,7 +96,7 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
 
       await invoiceService.create(payload);
       alert("Invoice berhasil diterbitkan!");
-      
+
       setSelectedOrderId('');
       setTanggalInvoice('');
       onRefreshInvoice();
@@ -109,6 +110,20 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
 
   const handlePrint = () => { window.print(); };
 
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+      // Mengirim request PUT ke endpoint backend
+      await api.put(`/order/${orderId}/status`, newStatus, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      alert("Status berhasil diupdate!");
+      onRefreshInvoice();
+    } catch (err) {
+      console.error("Error update status:", err);
+      alert("Gagal update status, cek console ya!");
+    }
+  };
   return {
     selectedOrderId,
     setSelectedOrderId,
@@ -127,6 +142,7 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
     handleSaveTemplate,
     handleCreateInvoice,
     handlePrint,
-    formatInvoiceNumber
+    formatInvoiceNumber,
+    updateStatus
   };
 }

@@ -131,4 +131,15 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Order> updateStatusTagihan(@PathVariable Long id, @RequestBody String status) {
+        // 🍏 Tambahkan replace untuk membersihkan tanda kutip ekstra dari JSON string
+        String cleanStatus = status.replace("\"", "");
+
+        return orderRepository.findById(id).map(order -> {
+            order.setStatusTagihan(cleanStatus);
+            return ResponseEntity.ok(orderRepository.save(order));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 }
