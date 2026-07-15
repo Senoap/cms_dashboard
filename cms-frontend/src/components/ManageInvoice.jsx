@@ -75,8 +75,7 @@ function ManageInvoice({
                 <button
                   type="button"
                   onClick={addNoteField}
-                  className="btn-action-edit"
-                  style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', background: 'rgba(52, 199, 89, 0.15)', color: '#34c759', borderColor: 'rgba(52, 199, 89, 0.3)' }}
+                  className="btn-premium-info"
                 >
                   ➕ Tambah Catatan
                 </button>
@@ -87,14 +86,14 @@ function ManageInvoice({
                   <span style={{ color: '#888', fontWeight: 'bold', fontSize: '14px', minWidth: '20px' }}>{index + 1}.</span>
                   <input type="text" value={note} onChange={e => handleNoteChange(index, e.target.value)} required />
                   {templateForm.notes.length > 1 && (
-                    <button type="button" onClick={() => removeNoteField(index)} style={{ background: 'rgba(231, 76, 60, 0.15)', color: '#e74c3c', border: '1px solid rgba(231, 76, 60, 0.3)', padding: '12px', borderRadius: '8px', cursor: 'pointer' }}>❌</button>
+                    <button type="button" onClick={() => removeNoteField(index)} className="btn-premium-danger" style={{ padding: '12px' }}>❌</button>
                   )}
                 </div>
               ))}
             </div>
 
             <div className="form-actions-premium">
-              <button type="submit" className="btn-submit-premium">💾 Terapkan Perubahan Template</button>
+              <button type="submit" className="btn-premium-primary">💾 Terapkan Perubahan Template</button>
             </div>
           </form>
         </div>
@@ -200,8 +199,8 @@ function ManageInvoice({
             <label>Tanggal Penerbitan Invoice</label>
             <input type="date" value={tanggalInvoice} onChange={e => setTanggalInvoice(e.target.value)} required />
           </div>
-          <div className="form-actions-premium">
-            <button type="submit" disabled={loading} className="btn-submit-premium">
+          <div className="form-input-premium">
+            <button type="submit" disabled={loading} className="btn-premium-primary">
               {loading ? "Memproses..." : "🧾 Cetak & Terbitkan Invoice"}
             </button>
           </div>
@@ -258,12 +257,15 @@ function ManageInvoice({
                           Rp {item.order && item.order.harga ? item.order.harga.toLocaleString('id-ID') : 0}
                         </td>
                         <td className="p-3 text-center">
-                          <button
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition"
-                            onClick={() => setSelectedInvoice(item)}
-                          >
-                            👁️ Lihat / Cetak
-                          </button>
+                          {/* 🍏 DIBUNGKUS WRAPPER FLEX DAN STANDARDISASI TOMBOL AKSI TABEL */}
+                          <div className="table-actions-premium">
+                            <button
+                              className="btn-premium-info"
+                              onClick={() => setSelectedInvoice(item)}
+                            >
+                              👁️ Lihat / Cetak
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -276,8 +278,8 @@ function ManageInvoice({
           /* KERTAS INVOICE REAL SAAT MAU DICETAK */
           <div className="invoice-view-wrapper">
             <div className="invoice-control-buttons">
-              <button onClick={() => setSelectedInvoice(null)} className="btn-cancel-premium" style={{ width: 'auto', padding: '10px 20px' }}>⬅️ Kembali ke Daftar</button>
-              <button onClick={handlePrint} className="btn-submit-premium" style={{ width: 'auto', padding: '10px 25px' }}>𖨡 Cetak / Simpan PDF</button>
+              <button onClick={() => setSelectedInvoice(null)} className="btn-premium-secondary">⬅️ Kembali ke Daftar</button>
+              <button onClick={handlePrint} className="btn-premium-primary">𖨡 Cetak / Simpan PDF</button>
             </div>
 
             <div className="invoice-paper">

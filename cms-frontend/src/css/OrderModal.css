@@ -1,4 +1,3 @@
-/* Overlay latar belakang gelap & blur */
 .modal-overlay-custom {
   position: fixed;
   top: 0;
@@ -11,23 +10,20 @@
   align-items: center;
   z-index: 9999;
   backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeInOrder 0.2s ease-out;
 }
 
-/* Kotak Putih Konten Utama Pop-up */
 .modal-content-premium {
   background: #ffffff;
   border-radius: 12px;
   padding: 28px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   width: 90%;
-  max-width: 600px; /* Dipersempit sedikit agar kompak pas di tengah */
-  animation: slideUp 0.25s ease-out;
+  max-width: 600px;
+  animation: slideUpOrder 0.25s ease-out;
   color: #1f2937;
-  font-family: inherit;
 }
 
-/* Header Modal */
 .modal-header-premium {
   display: flex;
   justify-content: space-between;
@@ -42,12 +38,8 @@
   font-weight: 700;
   color: #0f172a;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-/* Grid Layout untuk Form Input Data Utama */
 .modal-body-premium label {
   font-size: 13px;
   font-weight: 600;
@@ -76,18 +68,13 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-/* Sub-heading Daftar Item Barang */
 .modal-body-premium h4 {
   font-size: 15px;
   font-weight: 700;
   color: #0f172a;
   margin: 24px 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
-/* Struktur Tabel Rincian Barang */
 .modal-body-premium table {
   width: 100%;
   border-collapse: collapse;
@@ -113,7 +100,6 @@
   vertical-align: middle;
 }
 
-/* Box Ringkasan Total Harga */
 .modal-summary-box-custom {
   background-color: #f8fafc;
   border-radius: 6px;
@@ -126,18 +112,9 @@
   border: 1px solid #e2e8f0;
 }
 
-.modal-summary-box-custom strong {
-  color: #475569;
-  font-weight: 600;
-}
+.modal-summary-box-custom strong { color: #475569; }
+.modal-summary-box-custom span { color: #16a34a; font-weight: 700; font-size: 16px; }
 
-.modal-summary-box-custom span {
-  color: #16a34a;
-  font-weight: 700;
-  font-size: 16px;
-}
-
-/* Footer & Tombol Aksi */
 .modal-footer-premium {
   display: flex;
   justify-content: flex-end;
@@ -153,37 +130,12 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.modal-footer-premium button[type="button"] {
-  background-color: #94a3b8; /* Menyamakan warna abu-abu tombol Batal di screenshot lu */
-  color: #ffffff;
-  border: none;
-}
+.modal-footer-premium button[type="button"] { background-color: #94a3b8; color: #fff; border: none; }
+.modal-footer-premium button[type="button"]:hover { background-color: #64748b; }
+.modal-footer-premium button[type="submit"] { background-color: #007bff; color: #fff; border: none; font-weight: 600; }
+.modal-footer-premium button[type="submit"]:hover { background-color: #0056b3; }
 
-.modal-footer-premium button[type="button"]:hover {
-  background-color: #64748b;
-}
-
-.modal-footer-premium button[type="submit"] {
-  background-color: #007bff; /* Biru solid premium */
-  color: #ffffff;
-  border: none;
-  font-weight: 600;
-}
-
-.modal-footer-premium button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-/* Keyframes untuk Animasi */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+@keyframes fadeInOrder { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUpOrder { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

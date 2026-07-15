@@ -70,8 +70,7 @@ function OrderListView({ orders, onRefreshOrder }) {
                                         <button
                                             type="button"
                                             onClick={() => handleViewClick(ord)}
-                                            className="btn-submit-premium"
-                                            style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#0284c7', margin: 0, width: 'auto' }}
+                                            className="btn-premium-info"
                                         >
                                             👁️ View
                                         </button>
@@ -79,8 +78,8 @@ function OrderListView({ orders, onRefreshOrder }) {
                                             type="button"
                                             onClick={() => handleDeleteClick(ord.id, ord.pemesan)}
                                             disabled={deletingId === ord.id}
-                                            className="btn-submit-premium"
-                                            style={{ padding: '6px 12px', fontSize: '12px', backgroundColor: '#dc2626', margin: 0, width: 'auto' }}
+                                            className="btn-premium-danger"
+                                            style={{ marginLeft: '8px' }}
                                         >
                                             {deletingId === ord.id ? "⏳..." : "🗑️ Hapus"}
                                         </button>

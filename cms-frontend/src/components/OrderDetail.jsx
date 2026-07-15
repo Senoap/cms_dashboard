@@ -14,7 +14,7 @@ function OrderDetail({ orderData, onBack }) {
           <h3>📄 Detail Transaksi Order</h3>
           <p>Menampilkan informasi lengkap pesanan dan item barang dari database.</p>
         </div>
-        <button onClick={onBack} className="btn-back-gray">⬅️ Kembali ke List</button>
+        <button onClick={onBack} className="btn-premium-secondary">⬅️ Kembali ke List</button>
       </div>
 
       <div className="form-body-premium" style={{ marginTop: '20px' }}>

@@ -1,7 +1,6 @@
 import { useManageInventory } from '../hooks/useManageInventory';
 
 function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang }) {
-  // 🍏 Mengisolasi state form dan tabel ke custom hook lokal
   const {
     formData,
     loading,
@@ -27,7 +26,7 @@ function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang 
             <label>Nama Barang / Aset</label>
             <input
               type="text"
-              name="newNamaBarang" // 🍏 Harus cocok dengan properti di hook
+              name="newNamaBarang"
               placeholder="Contoh: Kursi Futura, Tenda Sarnafil VIP"
               value={formData.newNamaBarang}
               onChange={handleInputChange}
@@ -39,7 +38,7 @@ function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang 
             <label>Harga Sewa (Rp)</label>
             <input
               type="number"
-              name="hargaBarang" // 🍏 Harus cocok dengan properti di hook
+              name="hargaBarang"
               placeholder="Contoh: 50000"
               value={formData.hargaBarang}
               onChange={handleInputChange}
@@ -48,7 +47,7 @@ function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang 
           </div>
 
           <div className="form-actions-premium">
-            <button type="submit" disabled={loading} className="btn-submit-premium">
+            <button type="submit" disabled={loading} className="btn-premium-primary">
               {loading ? "Menyimpan..." : "💾 Simpan Master Barang"}
             </button>
           </div>
@@ -87,20 +86,15 @@ function ManageInventory({ barangList, onRefreshBarang, activeTab, onEditBarang 
                       Rp {(b.harga || 0).toLocaleString('id-ID')}
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <button
-                        onClick={() => onEditBarang(b)}
-                        className="btn-action-edit"
-                        style={{ marginRight: '8px', backgroundColor: 'rgba(0, 122, 255, 0.1)', color: '#007aff', borderColor: 'rgba(0, 122, 255, 0.2)', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(b.id, b.nmBarang)}
-                        className="btn-action-delete"
-                        style={{ backgroundColor: 'rgba(255, 59, 48, 0.1)', color: '#ff3b30', borderColor: 'rgba(255, 59, 48, 0.2)', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer' }}
-                      >
-                        🗑️
-                      </button>
+                      {/* 🍏 DIBUNGKUS DENGAN DIV WRAPPER FLEX AGAR BERJEJER HORIZONTAL */}
+                      <div className="table-actions-premium">
+                        <button onClick={() => onEditBarang(b)} className="btn-premium-info">
+                          ✏️ Edit
+                        </button>
+                        <button onClick={() => handleDeleteClick(b.id, b.nmBarang)} className="btn-premium-danger">
+                          🗑️ Hapus
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
