@@ -68,24 +68,32 @@ function ManageInvoice({
       companyLogo: tempCompanyLogo,
       notes: tempNotes.filter(note => note.trim() !== '')
     };
-    
+
     setTemplateConfig(updatedData);
     alert("Template Invoice & Logo berhasil diperbarui!");
   };
 
-  // 🍏 Fungsi Menerbitkan Invoice via Service
+  // 🍏 Fungsi Menerbitkan Invoice via Service (Sudah Ditambahkan noInvoice)
   const handleCreateInvoice = async (e) => {
     e.preventDefault();
     if (!selectedOrderId || !tanggalInvoice) return alert("Pilih order dan tanggal dulu, cuy!");
 
     setLoading(true);
     try {
+      const numericOrderId = Number(selectedOrderId);
+
+      // 🔒 GENERATE NOMOR INVOICE SECARA REAL (Misal: INV/2026/VII/004)
+      // Fungsi ini memakai helper formatInvoiceNumber bawaan lu yang sudah ter-import di atas
+      const generatedNoInvoice = formatInvoiceNumber(numericOrderId, tanggalInvoice);
+
       const payload = {
-        orderId: selectedOrderId,
-        tanggalInvoice: tanggalInvoice
+        id: numericOrderId,
+        tanggalInvoice: tanggalInvoice,
+        noInvoice: generatedNoInvoice, // 🍏 PERBAIKAN: Masukkan properti ini agar lolos validasi not-null database
+        order: { id: numericOrderId }
       };
 
-      await invoiceService.create(payload);
+      await invoiceService.create(payload); // Tembak API
       alert("Invoice berhasil diterbitkan!");
       
       // Reset parameter input
@@ -104,7 +112,7 @@ function ManageInvoice({
   if (activeTab === 'template-invoice') {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '30px', alignItems: 'start', maxWidth: '1400px', margin: '0 auto' }}>
-        
+
         {/* KOLOM KIRI: FORM CONFIG */}
         <div className="form-container-premium" style={{ margin: '0', maxWidth: '100%' }}>
           <div className="form-header-premium">
