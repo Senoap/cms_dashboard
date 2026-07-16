@@ -9,7 +9,10 @@ function ManageInvoice({
     selectedInvoice, setSelectedInvoice, loading, templateForm, todayDate,
     handleTemplateInputChange, handleLogoChange, handleNoteChange,
     addNoteField, removeNoteField, handleSaveTemplate, handleCreateInvoice,
-    handlePrint, formatInvoiceNumber, updateStatus // <--- updateStatus sudah masuk
+    handlePrint, formatInvoiceNumber,
+    handleUpdateStatusPenagihan, activeInvoiceTab,
+    setActiveInvoiceTab,
+    filteredInvoices // 🍏 Fungsi ini sekarang dipanggil dari hook
   } = useManageInvoice(invoices, onRefreshInvoice, templateConfig, setTemplateConfig);
 
   // --- SUBMENU: CONFIG TEMPLATE INVOICE (LIVE PREVIEW) ---
@@ -58,11 +61,7 @@ function ManageInvoice({
             <div className="form-group-premium" style={{ gap: '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label>Catatan Penting (Kaki Invoice)</label>
-                <button
-                  type="button"
-                  onClick={addNoteField}
-                  className="btn-premium-info"
-                >
+                <button type="button" onClick={addNoteField} className="btn-premium-info">
                   ➕ Tambah Catatan
                 </button>
               </div>
@@ -175,17 +174,11 @@ function ManageInvoice({
               <option value="">-- Pilih Order Aktif --</option>
               {orders
                 .filter(order => {
-                  // 1. Cek apakah status order adalah "Pengiriman"
                   const isReadyToInvoice = order.statusOrder === "Pengiriman";
-
-                  // 2. Cek apakah order ini SUDAH punya invoice di list
                   const alreadyHasInvoice = invoices.some(inv => {
-                    // Cocokkan ID order dari invoice dengan ID order saat ini
                     const invOrderId = inv.orderId || (inv.order ? inv.order.id : null);
                     return invOrderId == order.id;
                   });
-
-                  // Tampilkan hanya jika status "Pengiriman" DAN belum punya invoice
                   return isReadyToInvoice && !alreadyHasInvoice;
                 })
                 .map(order => (
@@ -220,23 +213,59 @@ function ManageInvoice({
             <div className="table-header-premium">
               <h3>📋 Daftar Invoice Cetak</h3>
               <p>Riwayat seluruh tagihan yang telah dicetak dan diterbitkan.</p>
+
+              {/* 🍏 TOMBOL TAB PREMIUM ALA LIST ORDER */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px', marginBottom: '20px' }}>
+                <button
+                  onClick={() => setActiveInvoiceTab('Semua')}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: '6px',
+                    border: activeInvoiceTab === 'Semua' ? '1px solid #fbbf24' : '1px solid #374151',
+                    backgroundColor: activeInvoiceTab === 'Semua' ? '#1f2937' : '#111827',
+                    color: activeInvoiceTab === 'Semua' ? '#fbbf24' : '#9ca3af',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  ⏳ Ongoing ({invoices.filter(i => i.statusPenagihan !== 'Terbayarkan').length})
+                </button>
+                <button
+                  onClick={() => setActiveInvoiceTab('Terbayarkan')}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: '6px',
+                    border: activeInvoiceTab === 'Terbayarkan' ? '1px solid #22c55e' : '1px solid #374151',
+                    backgroundColor: activeInvoiceTab === 'Terbayarkan' ? '#1f2937' : '#111827',
+                    color: activeInvoiceTab === 'Terbayarkan' ? '#22c55e' : '#9ca3af',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  ✅ Terbayarkan ({invoices.filter(i => i.statusPenagihan === 'Terbayarkan').length})
+                </button>
+              </div>
             </div>
 
             <div className="table-responsive-premium">
               <table className="crud-table-premium">
                 <thead>
                   <tr>
-                    <th style={{ width: '12%' }}>No. Tagihan</th>
-                    <th style={{ width: '8%' }}>Ref Order</th>
+                    <th style={{ width: '15%' }}>No. Tagihan</th>
+                    <th style={{ width: '10%' }}>Ref Order</th>
                     <th style={{ width: '15%' }}>Status</th>
                     <th style={{ width: '15%' }}>Nama Pelanggan</th>
-                    <th style={{ width: '10%' }}>Tanggal</th>
-                    <th style={{ width: '12%', textAlign: 'right' }}>Total</th>
-                    <th style={{ width: '10%', textAlign: 'center' }}>Aksi</th>
+                    <th style={{ width: '15%' }}>Tanggal</th>
+                    <th style={{ width: '15%', textAlign: 'right' }}>Total</th>
+                    <th style={{ width: '15%', textAlign: 'center' }}>Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {invoices.map((item, index) => {
+                  {filteredInvoices.map((item, index) => {
                     const invoiceNumber = item.noInvoice || formatInvoiceNumber(item.orderId || (item.order?.id || '0'), item.tanggalInvoice);
                     const orderId = item.orderId || item.order?.id || index;
 
@@ -244,29 +273,28 @@ function ManageInvoice({
                       <tr key={`${orderId}-${index}`} className="border-b hover:bg-gray-50">
                         <td className="p-3 font-semibold text-blue-600">{invoiceNumber}</td>
                         <td className="p-3">ORD-#{orderId}</td>
-
-                        {/* Status Dropdown */}
                         <td className="p-3">
                           <select
-                            value={item.order?.statusTagihan || "Belum Tertagih"}
-                            onChange={(e) => updateStatus(orderId, e.target.value)}
-                            // 🔒 Disable jika sudah "Tertagih"
-                            // disabled={item.order?.statusTagihan === "Tertagih"}
-                            // style={{
-                            //   width: '100%',
-                            //   padding: '5px',
-                            //   borderRadius: '4px',
-                            //   backgroundColor: item.order?.statusTagihan === "Tertagih" ? '#f1f5f9' : 'white',
-                            //   cursor: item.order?.statusTagihan === "Tertagih" ? 'not-allowed' : 'pointer'
-                            // }}
+                            className="status-dropdown-premium"
+                            value={item.statusPenagihan || "New"}
+                            onChange={(e) => handleUpdateStatusPenagihan(item.id, e.target.value)}
+                            disabled={item.statusPenagihan === "Terbayarkan"}
+                            style={{
+                              width: '100%',
+                              padding: '6px',
+                              borderRadius: '4px',
+                              border: '1px solid #ccc',
+                              backgroundColor: item.statusPenagihan === "Terbayarkan" ? '#d1fae5' : 'white',
+                              color: item.statusPenagihan === "Terbayarkan" ? '#065f46' : 'black',
+                              fontWeight: 'bold',
+                              cursor: item.statusPenagihan === "Terbayarkan" ? 'not-allowed' : 'pointer'
+                            }}
                           >
-                            {/* Opsi selalu ada agar value saat ini tetap terpilih */}
-                            <option value="Belum Tertagih">Belum Tertagih</option>
-                            <option value="Proses Tagih">Proses Tagih</option>
-                            <option value="Tertagih">Tertagih</option>
+                            <option value="New">New</option>
+                            <option value="Proses Penagihan">Proses Penagihan</option>
+                            <option value="Terbayarkan">Terbayarkan</option>
                           </select>
                         </td>
-
                         <td className="p-3">{item.order?.pemesan || 'N/A'}</td>
                         <td className="p-3">{item.tanggalInvoice}</td>
                         <td className="p-3 text-right font-bold text-green-600">
@@ -274,7 +302,7 @@ function ManageInvoice({
                         </td>
                         <td className="p-3 text-center">
                           <button className="btn-premium-info" onClick={() => setSelectedInvoice(item)}>
-                            👁️ Lihat
+                            👁️ View
                           </button>
                         </td>
                       </tr>

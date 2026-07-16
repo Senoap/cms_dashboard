@@ -15,10 +15,13 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
     handleSubmitOrder
   } = useManageOrder(barangList, onRefreshOrder);
 
+
+  const todayDate = new Date().toISOString().split('T')[0];
+
   if (activeTab === 'create-order') {
     return (
       <div className="form-container-premium" style={{ maxWidth: '850px' }}>
-        
+
         {/* --- HEADER --- */}
         <div className="form-header-premium">
           <h3>📦 Buat Transaksi Order Baru</h3>
@@ -26,7 +29,7 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
         </div>
 
         <div className="form-body-premium">
-          
+
           {/* --- AREA 1: INPUT BARANG & QUANTITY --- */}
           <div className="form-group-premium">
             <label>Pilih Barang / Aset</label>
@@ -91,7 +94,12 @@ function ManageOrder({ orders, barangList, onRefreshOrder, activeTab }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
               <div className="form-group-premium">
                 <label>Tanggal Pesan</label>
-                <input type="date" name="tanggalPesan" value={customerForm.tanggalPesan} onChange={handleCustomerInputChange} required />
+                <input
+                  type="date"
+                  value={todayDate} // <-- Auto isi tanggal hari ini
+                  disabled          // <-- Biar admin gak bisa edit
+                  style={{ backgroundColor: '#f1f5f9', cursor: 'not-allowed' }}
+                />
               </div>
               <div className="form-group-premium">
                 <label>Tanggal Acara</label>

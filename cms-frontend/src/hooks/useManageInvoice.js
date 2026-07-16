@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { invoiceService } from '../services/invoiceService';
 import { formatSecureInvoiceNumber as formatInvoiceNumber } from '../utils/securityHelper';
-import api from '../services/api';
 
 export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, setTemplateConfig) {
   const [selectedOrderId, setSelectedOrderId] = useState('');
   const [tanggalInvoice, setTanggalInvoice] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  // 🍏 State baru buat filter Tab
+  const [activeInvoiceTab, setActiveInvoiceTab] = useState('Semua');
 
   // State lokal untuk konfigurasi template cetak
   const [templateForm, setTemplateForm] = useState({
@@ -22,7 +24,12 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
 
   const todayDate = new Date().toISOString().split('T')[0];
 
-  // Sinkronisasi data dari konfigurasi global parent
+  // 🍏 Logika Filter: Filter invoice berdasarkan status
+  const filteredInvoices = invoices.filter(item => {
+    if (activeInvoiceTab === 'Terbayarkan') return item.statusPenagihan === 'Terbayarkan';
+    return true; // Untuk tab 'Semua'
+  });
+
   useEffect(() => {
     setTemplateForm({
       companyName: templateConfig.companyName,
@@ -92,8 +99,7 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
         tanggalInvoice: tanggalInvoice,
         noInvoice: generatedNoInvoice,
         order: { id: numericOrderId },
-        // TAMBAHKAN LINE INI:
-        statusTagihan: "Belum Tertagih"
+        statusPenagihan: "New"
       };
 
       await invoiceService.create(payload);
@@ -110,44 +116,26 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
     }
   };
 
-  const handlePrint = () => { window.print(); };
-
-  const updateStatus = async (orderId, newStatus) => {
+  const handleUpdateStatusPenagihan = async (invoiceId, newStatus) => {
     try {
-      // Bungkus status dalam tanda kutip manual agar jadi JSON valid
-      const response = await api.put(`/order/${orderId}/status`, `"${newStatus}"`, {
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      if (response.status === 200) {
-        alert("Status berhasil diupdate, cuy!");
-        await onRefreshInvoice();
-      }
-    } catch (err) {
-      console.error("Error update status:", err);
-      alert("Gagal update status, cek console!");
+      await invoiceService.updateStatusPenagihan(invoiceId, newStatus);
+      if (typeof onRefreshInvoice === 'function') onRefreshInvoice();
+      alert(`✅ Status penagihan berhasil diubah jadi: ${newStatus}`);
+    } catch (error) {
+      console.error("Gagal update status penagihan:", error);
+      alert("❌ Gagal update status!");
     }
   };
 
+  const handlePrint = () => { window.print(); };
+
   return {
-    selectedOrderId,
-    setSelectedOrderId,
-    tanggalInvoice,
-    setTanggalInvoice,
-    selectedInvoice,
-    setSelectedInvoice,
-    loading,
-    templateForm,
-    todayDate,
-    handleTemplateInputChange,
-    handleLogoChange,
-    handleNoteChange,
-    addNoteField,
-    removeNoteField,
-    handleSaveTemplate,
-    handleCreateInvoice,
-    handlePrint,
-    formatInvoiceNumber,
-    updateStatus
+    selectedOrderId, setSelectedOrderId, tanggalInvoice, setTanggalInvoice,
+    selectedInvoice, setSelectedInvoice, loading, templateForm, todayDate,
+    handleTemplateInputChange, handleLogoChange, handleNoteChange,
+    addNoteField, removeNoteField, handleSaveTemplate, handleCreateInvoice,
+    handlePrint, formatInvoiceNumber, handleUpdateStatusPenagihan,
+    // 🍏 Export state dan data filter baru
+    activeInvoiceTab, setActiveInvoiceTab, filteredInvoices 
   };
 }

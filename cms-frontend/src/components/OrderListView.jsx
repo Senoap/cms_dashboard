@@ -9,6 +9,9 @@ function OrderListView({ orders, onRefreshOrder }) {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
+    
+    // 🍏 STATE BARU UNTUK TAB
+    const [activeTab, setActiveTab] = useState('ongoing');
 
     const handleViewClick = (order) => {
         setSelectedOrder(order);
@@ -83,11 +86,52 @@ function OrderListView({ orders, onRefreshOrder }) {
         }
     };
 
+    // 🍏 LOGIKA FILTER BERDASARKAN TAB
+    const filteredOrders = orders.filter(order => {
+        if (activeTab === 'ongoing') return order.statusOrder !== 'Pengiriman';
+        if (activeTab === 'selesai') return order.statusOrder === 'Pengiriman';
+        return true;
+    });
+
     return (
         <div className="table-container-premium" style={{ maxWidth: '100%' }}>
             <div className="table-header-premium">
                 <h3>📋 Daftar Transaksi Masuk</h3>
                 <p>Seluruh riwayat pesanan pelanggan yang masuk ke Pinarak Langgeng.</p>
+            </div>
+
+            {/* 🍏 UI UNTUK TOMBOL TAB */}
+            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+                <button 
+                    onClick={() => setActiveTab('ongoing')}
+                    style={{ 
+                        padding: '10px 20px', 
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: activeTab === 'ongoing' ? '#4f46e5' : '#9ca3af',
+                        transition: 'background-color 0.3s'
+                    }}
+                >
+                    ⏳ Ongoing ({orders.filter(o => o.statusOrder !== 'Pengiriman').length})
+                </button>
+                <button 
+                    onClick={() => setActiveTab('selesai')}
+                    style={{ 
+                        padding: '10px 20px', 
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: activeTab === 'selesai' ? '#10b981' : '#9ca3af',
+                        transition: 'background-color 0.3s'
+                    }}
+                >
+                    ✅ Selesai ({orders.filter(o => o.statusOrder === 'Pengiriman').length})
+                </button>
             </div>
 
             <div className="table-responsive-premium">
@@ -102,14 +146,16 @@ function OrderListView({ orders, onRefreshOrder }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.length === 0 ? (
+                        {/* 🍏 GANTI orders.length JADI filteredOrders.length */}
+                        {filteredOrders.length === 0 ? (
                             <tr>
-                                <td colSpan="4" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
-                                    📭 Belum ada data order masuk.
+                                <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+                                    📭 Belum ada data order untuk kategori ini.
                                 </td>
                             </tr>
                         ) : (
-                            orders.map((order) => (
+                            // 🍏 GANTI orders.map JADI filteredOrders.map
+                            filteredOrders.map((order) => (
                                 <tr key={order.id}>
                                     <td><strong>{order.pemesan}</strong></td>
                                     <td>{order.tanggalPesan}</td>
@@ -142,7 +188,7 @@ function OrderListView({ orders, onRefreshOrder }) {
                                         >
                                             🚚 Surat Jalan
                                         </button>
-                                        <button onClick={() => handleViewClick(order)} className="btn-premium-info">
+                                        <button onClick={() => handleViewClick(order)} className="btn-premium-info" style={{ marginLeft: '8px' }}>
                                             👁️ View
                                         </button>
                                         <button

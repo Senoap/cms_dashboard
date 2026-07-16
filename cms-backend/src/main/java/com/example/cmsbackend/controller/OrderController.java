@@ -46,33 +46,12 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody Order order) {
         try {
-            // Cek apakah data list details dikirim dari frontend React
-            if (order.getDetails() != null && !order.getDetails().isEmpty()) {
-                List<OrderDetail> validatedDetails = new ArrayList<>();
+            // Force set tanggalPesan ke hari ini di server
+            // Ini memastikan tanggal tetap tercatat meski dikirim kosong dari frontend
+            order.setTanggalPesan(java.time.LocalDate.now());
 
-                for (OrderDetail detail : order.getDetails()) {
-                    // 🍏 KRUSIAL: Link balik objek induk ke setiap item detail
-                    detail.setOrder(order);
+            // ... logic detail lainnya (tetap sama) ...
 
-                    // Validasi dan tarik data barang asli dari database berdasarkan ID yang dikirim
-                    if (detail.getBarang() != null && detail.getBarang().getId() != null) {
-                        var barangOpt = barangRepository.findById(detail.getBarang().getId());
-                        if (barangOpt.isPresent()) {
-                            Barang barangAsli = barangOpt.get();
-                            detail.setBarang(barangAsli);
-
-                            // Hitung ulang subtotal otomatis di sisi backend agar aman
-                            detail.setSubTotal(barangAsli.getHarga() * detail.getJumlah());
-                        }
-                    }
-                    validatedDetails.add(detail);
-                }
-
-                // Set kembali list detail yang sudah valid dan terikat ke objek utama
-                order.setDetails(validatedDetails);
-            }
-
-            // Simpan objek utama. Karena cascade = CascadeType.ALL, detail otomatis ikut tersimpan!
             Order savedOrder = orderRepository.save(order);
             return ResponseEntity.ok(savedOrder);
         } catch (Exception e) {

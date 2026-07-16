@@ -32,5 +32,16 @@ export const invoiceService = {
       console.error("❌ [invoiceService.saveTemplate] Error:", err);
       throw err;
     }
+  },
+
+  // Update status penagihan invoice (New > Proses Penagihan > Terbayarkan)
+  updateStatusPenagihan: async (id, status) => {
+    try {
+      const response = await api.put(`/invoice/${id}/status-penagihan`, { status });
+      return response.data;
+    } catch (err) {
+      console.error("❌ [invoiceService.updateStatusPenagihan] Error:", err);
+      throw err;
+    }
   }
 };

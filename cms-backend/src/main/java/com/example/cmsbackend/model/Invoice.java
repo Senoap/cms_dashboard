@@ -17,8 +17,8 @@ public class Invoice {
     @Column(name = "tanggal_invoice", nullable = false)
     private LocalDate tanggalInvoice;
 
-    @Column(name = "status_tagihan")
-    private String statusTagihan = "Belum Tertagih";
+    @Column(name = "status_penagihan")
+    private String statusPenagihan = "New";
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
@@ -37,6 +37,11 @@ public class Invoice {
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
 
-    public String getStatusTagihan() { return statusTagihan; }
-    public void setStatusTagihan(String statusTagihan) { this.statusTagihan = statusTagihan; }
+    public String getStatusPenagihan() {
+        return statusPenagihan;
+    }
+
+    public void setStatusPenagihan(String statusPenagihan) {
+        this.statusPenagihan = statusPenagihan;
+    }
 }
