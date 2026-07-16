@@ -174,10 +174,10 @@ function ManageInvoice({
             <select value={selectedOrderId} onChange={e => setSelectedOrderId(e.target.value)} required>
               <option value="">-- Pilih Order Aktif --</option>
               {orders
-                .filter(ord => !invoices.some(inv => inv.orderId === ord.id))
+                .filter(ord => !invoices.some(inv => inv.orderId === order.id))
                 .map(ord => (
-                  <option key={ord.id} value={ord.id}>
-                    Order #{ord.id} - {ord.pemesan}
+                  <option key={order.id} value={order.id}>
+                    Order #{order.id} - {order.pemesan}
                   </option>
                 ))
               }

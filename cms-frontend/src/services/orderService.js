@@ -23,6 +23,17 @@ export const orderService = {
     }
   },
 
+  updateStatusOrder: async (id, status) => {
+    try {
+      // Kita kirim string status langsung
+      const response = await api.put(`/order/${id}/status-order`, status);
+      return response.data;
+    } catch (err) {
+      console.error(`❌ [orderService.updateStatusOrder] Error ID ${id}:`, err);
+      throw err;
+    }
+  },
+
   // Aksi hapus transaksi order berdasarkan ID
   delete: async (id) => {
     try {

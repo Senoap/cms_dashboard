@@ -37,6 +37,9 @@ public class Order {
     @Column(name = "status_tagihan")
     private String statusTagihan = "Belum Tertagih";
 
+    @Column(name = "status_order")
+    private String statusOrder = "Order Baru";
+
     // 🍏 Mengamankan serialisasi data satu arah dari Induk ke Anak
     @JsonManagedReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -72,4 +75,7 @@ public class Order {
 
     public String getStatusTagihan() { return statusTagihan; }
     public void setStatusTagihan(String statusTagihan) { this.statusTagihan = statusTagihan; }
+
+    public String getStatusOrder() { return statusOrder; }
+    public void setStatusOrder(String statusOrder) { this.statusOrder = statusOrder; }
 }

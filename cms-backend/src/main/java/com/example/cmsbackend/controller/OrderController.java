@@ -166,4 +166,17 @@ public class OrderController {
 
         }).orElse(ResponseEntity.notFound().build());
     }
+    // Tambahkan endpoint ini di OrderController
+    @Transactional
+    @PutMapping("/{id}/status-order")
+    public ResponseEntity<Order> updateStatusOrder(@PathVariable Long id, @RequestBody String status) {
+        String cleanStatus = status.replace("\"", "");
+
+        return orderRepository.findById(id).map(order -> {
+            // Logika sederhana: update status order (Order Baru > Konfirmasi > Pengiriman)
+            order.setStatusOrder(cleanStatus);
+            return ResponseEntity.ok(orderRepository.save(order));
+        }).orElse(ResponseEntity.notFound().build());
+    }
 }
+
