@@ -34,9 +34,6 @@ public class Order {
     @Column(name = "lokasi_acara", length = 500)
     private String lokasiAcara;
 
-    @Column(name = "status_tagihan")
-    private String statusTagihan = "Belum Tertagih";
-
     @Column(name = "status_order")
     private String statusOrder = "Order Baru";
 
@@ -72,9 +69,6 @@ public class Order {
 
     public List<OrderDetail> getDetails() { return details; }
     public void setDetails(List<OrderDetail> details) { this.details = details; }
-
-    public String getStatusTagihan() { return statusTagihan; }
-    public void setStatusTagihan(String statusTagihan) { this.statusTagihan = statusTagihan; }
 
     public String getStatusOrder() { return statusOrder; }
     public void setStatusOrder(String statusOrder) { this.statusOrder = statusOrder; }

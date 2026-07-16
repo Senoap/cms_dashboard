@@ -251,14 +251,14 @@ function ManageInvoice({
                             value={item.order?.statusTagihan || "Belum Tertagih"}
                             onChange={(e) => updateStatus(orderId, e.target.value)}
                             // 🔒 Disable jika sudah "Tertagih"
-                            disabled={item.order?.statusTagihan === "Tertagih"}
-                            style={{
-                              width: '100%',
-                              padding: '5px',
-                              borderRadius: '4px',
-                              backgroundColor: item.order?.statusTagihan === "Tertagih" ? '#f1f5f9' : 'white',
-                              cursor: item.order?.statusTagihan === "Tertagih" ? 'not-allowed' : 'pointer'
-                            }}
+                            // disabled={item.order?.statusTagihan === "Tertagih"}
+                            // style={{
+                            //   width: '100%',
+                            //   padding: '5px',
+                            //   borderRadius: '4px',
+                            //   backgroundColor: item.order?.statusTagihan === "Tertagih" ? '#f1f5f9' : 'white',
+                            //   cursor: item.order?.statusTagihan === "Tertagih" ? 'not-allowed' : 'pointer'
+                            // }}
                           >
                             {/* Opsi selalu ada agar value saat ini tetap terpilih */}
                             <option value="Belum Tertagih">Belum Tertagih</option>

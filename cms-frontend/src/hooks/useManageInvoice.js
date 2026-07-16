@@ -114,18 +114,21 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
 
   const updateStatus = async (orderId, newStatus) => {
     try {
-      // Mengirim request PUT ke endpoint backend
-      await api.put(`/order/${orderId}/status`, newStatus, {
+      // Bungkus status dalam tanda kutip manual agar jadi JSON valid
+      const response = await api.put(`/order/${orderId}/status`, `"${newStatus}"`, {
         headers: { 'Content-Type': 'application/json' }
       });
 
-      alert("Status berhasil diupdate!");
-      onRefreshInvoice();
+      if (response.status === 200) {
+        alert("Status berhasil diupdate, cuy!");
+        await onRefreshInvoice();
+      }
     } catch (err) {
       console.error("Error update status:", err);
-      alert("Gagal update status, cek console ya!");
+      alert("Gagal update status, cek console!");
     }
   };
+
   return {
     selectedOrderId,
     setSelectedOrderId,

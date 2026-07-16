@@ -137,35 +137,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-@Transactional
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Order> updateStatusTagihan(@PathVariable Long id, @RequestBody String status) {
-        // Membersihkan tanda kutip ekstra dari JSON string
-        String cleanStatus = status.replace("\"", "");
 
-        return orderRepository.findById(id).map(order -> {
-
-            // LOGIKA BARU: Cek kalau statusnya jadi "Tertagih" dan sebelumnya bukan "Tertagih"
-            if ("Tertagih".equals(cleanStatus) && !"Tertagih".equals(order.getStatusTagihan())) {
-
-                // Buat record Transaksi baru
-                Transaksi transaksiBaru = new Transaksi();
-                transaksiBaru.setOrder(order);
-                transaksiBaru.setTotal(order.getHarga().doubleValue());
-
-                // Simpan tanggal hari ini
-                transaksiBaru.setTanggal(java.time.LocalDate.now());
-
-                // Simpan ke database
-                transaksiRepository.save(transaksiBaru);
-            }
-
-            // Tetap simpan status yang baru di Order
-            order.setStatusTagihan(cleanStatus);
-            return ResponseEntity.ok(orderRepository.save(order));
-
-        }).orElse(ResponseEntity.notFound().build());
-    }
     // Tambahkan endpoint ini di OrderController
     @Transactional
     @PutMapping("/{id}/status-order")
