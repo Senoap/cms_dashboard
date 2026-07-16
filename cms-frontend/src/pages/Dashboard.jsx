@@ -9,10 +9,11 @@ import ManageInventory from '../components/ManageInventory';
 import ManageOrder from '../components/ManageOrder';
 import ManageInvoice from '../components/ManageInvoice';
 import OrderDetail from '../components/OrderDetail';
+import TransactionList from '../components/TransactionList';
 
 // Import Services, Configs & Global Modals
-import { useDashboardData } from '../hooks/useDashboardData'; 
-import { DEFAULT_TEMPLATE_CONFIG, MENU_STRUCTURE } from '../constant'; 
+import { useDashboardData } from '../hooks/useDashboardData';
+import { DEFAULT_TEMPLATE_CONFIG, MENU_STRUCTURE } from '../constant';
 import EditBarangModal from '../components/EditBarangModal';
 import OrderDetailModal from '../components/OrderDetailModal';
 
@@ -36,15 +37,15 @@ function Dashboard() {
   // =================================================================
   // 3. CUSTOM HOOKS: DATA FETCHING PROCESS
   // =================================================================
-  const { 
-    posts, 
-    barangList, 
-    orders, 
-    invoices, 
-    loadPosts,    
-    loadBarang,   
-    loadOrders, 
-    loadInvoices 
+  const {
+    posts,
+    barangList,
+    orders,
+    invoices,
+    loadPosts,
+    loadBarang,
+    loadOrders,
+    loadInvoices
   } = useDashboardData();
 
   // =================================================================
@@ -79,6 +80,9 @@ function Dashboard() {
     if (activeTab.includes('invoice')) {
       return <ManageInvoice invoices={invoices} orders={orders} onRefreshInvoice={loadInvoices} activeTab={activeTab} templateConfig={templateConfig} setTemplateConfig={setTemplateConfig} />;
     }
+    if (activeTab === 'transaksi') {
+      return <TransactionList />;
+    }
     if (activeTab === 'detail-order') {
       return <OrderDetail orderData={selectedOrder} onBack={() => setActiveTab('list-order')} />;
     }
@@ -87,14 +91,14 @@ function Dashboard() {
 
   return (
     <div className={`admin-container ${isLightMode ? 'light-theme' : ''}`}>
-      
+
       {/* VIEW SECTION: LEFT SIDEBAR NAVIGATION */}
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <img src={logoImg} alt="Logo" className="sidebar-logo" />
           <h1 className="sidebar-title">Pinarak Langgeng</h1>
         </div>
-        
+
         <div className="theme-switch-wrapper">
           <span>Dark</span>
           <label className="theme-switch">
@@ -115,8 +119,8 @@ function Dashboard() {
               {openMenu === menu.id && (
                 <ul className="submenu-list">
                   {menu.items.map((sub) => (
-                    <li 
-                      key={sub.tabId} 
+                    <li
+                      key={sub.tabId}
                       className={`submenu-item ${activeTab === sub.tabId ? 'active' : ''}`}
                       onClick={() => setActiveTab(sub.tabId)}
                     >
@@ -128,7 +132,7 @@ function Dashboard() {
             </li>
           ))}
         </ul>
-        
+
         <div className="sidebar-footer">
           <Link to="/" className="link-back">🥞 Keluar ke Web Utama</Link>
         </div>

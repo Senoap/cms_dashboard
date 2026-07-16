@@ -45,7 +45,8 @@ export const MENU_STRUCTURE = [
     items: [
       { tabId: 'create-invoice', label: '➕ Create Invoice' },
       { tabId: 'list-invoice', label: '📋 List Invoice' },
-      { tabId: 'template-invoice', label: '⚙️ Template Invoice' }
+      { tabId: 'template-invoice', label: '⚙️ Template Invoice' },
+      { tabId: 'transaksi', label: 'Laporan Transaksi' }
     ]
   }
 ];
