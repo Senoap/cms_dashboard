@@ -3,6 +3,7 @@ import OrderDetailModal from './OrderDetailModal';
 import '../css/OrderModal.css';
 import '../css/OrderList.css';
 import { orderService } from '../services/orderService';
+import { printSuratJalan } from '../services/printService';
 
 function OrderListView({ orders, onRefreshOrder }) {
     const [selectedOrder, setSelectedOrder] = useState(null);
@@ -20,9 +21,38 @@ function OrderListView({ orders, onRefreshOrder }) {
         if (typeof onRefreshOrder === 'function') onRefreshOrder();
     };
 
-    const handlePrintSuratJalan = (id) => {
-        // Nanti kita arahkan ke halaman cetak atau buka modal
-        alert("Fitur Cetak Surat Jalan untuk Order ID: " + id);
+    const formatTanggal = (tanggalString) => {
+        if (!tanggalString) return "-";
+        const date = new Date(tanggalString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`; // Hasilnya jadi DD-MM-YYYY
+    };
+
+    const handlePrintSuratJalan = (order) => {
+        // Contoh: Admin bisa edit catatan sebelum cetak
+        const catatanUser = prompt("Masukkan catatan untuk surat jalan:", "Pesanan harap dicek kembali.");
+
+        if (catatanUser !== null) {
+            printSuratJalan(order, {
+                namaToko: "Pinarak Langgeng Baru",
+                catatan: catatanUser
+            });
+        }
+    };
+
+    const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+    const [orderToPrint, setOrderToPrint] = useState(null);
+
+    const initiatePrint = (order) => {
+        setOrderToPrint(order);
+        setIsPrintModalOpen(true);
+    };
+
+    const executePrint = (config) => {
+        printSuratJalan(orderToPrint, config);
+        setIsPrintModalOpen(false);
     };
 
     const handleStatusChange = async (id, newStatus) => {
@@ -89,6 +119,10 @@ function OrderListView({ orders, onRefreshOrder }) {
                                             value={order.statusOrder || "Order Baru"}
                                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                             className="status-dropdown-premium"
+                                            disabled={order.statusOrder === "Pengiriman"}
+                                            style={{
+                                                cursor: order.statusOrder === "Pengiriman" ? 'not-allowed' : 'pointer'
+                                            }}
                                         >
                                             <option value="Order Baru">Order Baru</option>
                                             <option value="Konfirmasi">Konfirmasi</option>
@@ -97,7 +131,7 @@ function OrderListView({ orders, onRefreshOrder }) {
                                     </td>
                                     <td className="action-container-premium">
                                         <button
-                                            onClick={() => handlePrintSuratJalan(order.id)}
+                                            onClick={() => handlePrintSuratJalan(order)}
                                             className="btn-premium-info" // Lu bisa ganti class sesuai warna yang lu mau
                                             disabled={order.statusOrder !== "Pengiriman"} // 🔒 KUNCI DI SINI
                                             style={{

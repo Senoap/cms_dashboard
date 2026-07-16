@@ -174,8 +174,21 @@ function ManageInvoice({
             <select value={selectedOrderId} onChange={e => setSelectedOrderId(e.target.value)} required>
               <option value="">-- Pilih Order Aktif --</option>
               {orders
-                .filter(ord => !invoices.some(inv => inv.orderId === order.id))
-                .map(ord => (
+                .filter(order => {
+                  // 1. Cek apakah status order adalah "Pengiriman"
+                  const isReadyToInvoice = order.statusOrder === "Pengiriman";
+
+                  // 2. Cek apakah order ini SUDAH punya invoice di list
+                  const alreadyHasInvoice = invoices.some(inv => {
+                    // Cocokkan ID order dari invoice dengan ID order saat ini
+                    const invOrderId = inv.orderId || (inv.order ? inv.order.id : null);
+                    return invOrderId == order.id;
+                  });
+
+                  // Tampilkan hanya jika status "Pengiriman" DAN belum punya invoice
+                  return isReadyToInvoice && !alreadyHasInvoice;
+                })
+                .map(order => (
                   <option key={order.id} value={order.id}>
                     Order #{order.id} - {order.pemesan}
                   </option>

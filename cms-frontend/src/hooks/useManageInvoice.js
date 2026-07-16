@@ -91,7 +91,9 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
         id: numericOrderId,
         tanggalInvoice: tanggalInvoice,
         noInvoice: generatedNoInvoice,
-        order: { id: numericOrderId }
+        order: { id: numericOrderId },
+        // TAMBAHKAN LINE INI:
+        statusTagihan: "Belum Tertagih"
       };
 
       await invoiceService.create(payload);

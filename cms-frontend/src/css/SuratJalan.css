@@ -1,0 +1,9 @@
+/* src/css/SuratJalan.css */
+.surat-jalan-page { padding: 40px; font-family: Arial, sans-serif; }
+.sj-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+.sj-table th, .sj-table td { border: 1px solid #000; padding: 10px; }
+
+/* CSS Khusus Print agar tombol cetak hilang */
+@media print {
+  .no-print { display: none; }
+}
