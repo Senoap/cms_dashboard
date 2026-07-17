@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import api from '../services/api'; // Sesuaikan path ini dengan project lu
+import api from '../services/api'; 
+import '../css/TransactionList.css'; // Pastikan path impor CSS ini sesuai folder lu
 
 function TransactionList() {
     const [transaksi, setTransaksi] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('ongoing');
+    const [activeTab, setActiveTab] = useState('ongoing'); // Tetap disimpan jika dibutuhkan navigasi parent
 
-
-    // Fetch data transaksi dari backend
+    // Fetch data transaksi dari backend saat komponen dimuat
     useEffect(() => {
         const fetchTransaksi = async () => {
             try {
@@ -31,7 +31,7 @@ function TransactionList() {
             </div>
 
             {loading ? (
-                <div style={{ padding: '20px', textAlign: 'center' }}>Memuat data...</div>
+                <div className="loading-text">Memuat data...</div>
             ) : (
                 <div className="table-responsive-premium">
                     <table className="crud-table-premium">
@@ -40,7 +40,7 @@ function TransactionList() {
                                 <th>No Invoice</th>
                                 <th>Pemesan</th>
                                 <th>Tanggal Invoice</th>
-                                <th style={{ textAlign: 'right' }}>Total Pendapatan</th>
+                                <th className="text-right">Total Pendapatan</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,22 +50,21 @@ function TransactionList() {
                                         <td>{item.noInvoice || '-'}</td>
                                         <td>{item.pemesan || '-'}</td>
                                         <td>{item.tglInvoice || '-'}</td>
-                                        <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#16a34a' }}>
-                                            {/* Ganti item.total (kalau masih 0, pakai item.total juga) */}
+                                        <td className="text-right font-bold text-success">
                                             Rp {item.harga ? item.harga.toLocaleString('id-ID') : 0}
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="4" style={{ textAlign: 'center' }}>Data tidak ditemukan.</td>
+                                    <td colSpan="4" className="text-center">Data tidak ditemukan.</td>
                                 </tr>
                             )}
                         </tbody>
                         <tfoot>
-                            <tr style={{ borderTop: '2px solid #ddd' }}>
-                                <td colSpan="3" style={{ textAlign: 'right', fontWeight: 'bold', padding: '15px' }}>Total Keseluruhan:</td>
-                                <td style={{ textAlign: 'right', fontWeight: 'bold', padding: '15px', color: '#16a34a' }}>
+                            <tr className="table-footer-row">
+                                <td colSpan="3" className="table-footer-cell">Total Keseluruhan:</td>
+                                <td className="table-footer-cell text-success">
                                     Rp {transaksi.reduce((sum, item) => sum + (item.harga || 0), 0).toLocaleString('id-ID')}
                                 </td>
                             </tr>

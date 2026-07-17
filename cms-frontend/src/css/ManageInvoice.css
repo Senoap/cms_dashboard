@@ -1,0 +1,84 @@
+/* Layout Wrapper untuk Template Config */
+.invoice-grid-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 30px;
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Badge Live Preview */
+.preview-badge {
+  color: #888;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: -10px;
+  letter-spacing: 0.5px;
+}
+
+/* Skala Invoice Kertas Preview */
+.invoice-paper-preview {
+  transform: scale(0.95);
+  transform-origin: top center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+/* Tab Filter Ongoing / Terbayarkan */
+.tab-buttons-container {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.tab-button.ongoing-active {
+  border: 1px solid #fbbf24;
+  background-color: #1f2937;
+  color: #fbbf24;
+}
+
+.tab-button.terbayarkan-active {
+  border: 1px solid #22c55e;
+  background-color: #1f2937;
+  color: #22c55e;
+}
+
+.tab-button.inactive {
+  border: 1px solid #374151;
+  background-color: #111827;
+  color: #9ca3af;
+}
+
+/* Dropdown Status Table */
+.status-dropdown-premium {
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+}
+
+.status-dropdown-premium.terbayarkan {
+  background-color: #d1fae5;
+  color: #065f46;
+  cursor: not-allowed;
+}
+
+.status-dropdown-premium.ongoing {
+  background-color: white;
+  color: black;
+  cursor: pointer;
+}

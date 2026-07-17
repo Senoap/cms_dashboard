@@ -1,0 +1,34 @@
+/* Teks Loading */
+.loading-text {
+    padding: 20px;
+    text-align: center;
+}
+
+/* Garis pembatas footer tabel */
+.table-footer-row {
+    border-top: 2px solid #ddd;
+}
+
+/* Cell footer untuk Grand Total */
+.table-footer-cell {
+    text-align: right;
+    font-weight: bold;
+    padding: 15px;
+}
+
+/* Helper Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.text-success {
+    color: #16a34a;
+}

@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import OrderDetailModal from './OrderDetailModal';
-import '../css/OrderModal.css';
-import '../css/OrderList.css';
 import { orderService } from '../services/orderService';
 import { printSuratJalan } from '../services/printService';
+import '../css/OrderList.css';
+import '../css/OrderModal.css';
 
 function OrderListView({ orders, onRefreshOrder }) {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
-    
-    // 🍏 STATE BARU UNTUK TAB
     const [activeTab, setActiveTab] = useState('ongoing');
 
     const handleViewClick = (order) => {
@@ -24,19 +22,8 @@ function OrderListView({ orders, onRefreshOrder }) {
         if (typeof onRefreshOrder === 'function') onRefreshOrder();
     };
 
-    const formatTanggal = (tanggalString) => {
-        if (!tanggalString) return "-";
-        const date = new Date(tanggalString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`; // Hasilnya jadi DD-MM-YYYY
-    };
-
     const handlePrintSuratJalan = (order) => {
-        // Contoh: Admin bisa edit catatan sebelum cetak
         const catatanUser = prompt("Masukkan catatan untuk surat jalan:", "Pesanan harap dicek kembali.");
-
         if (catatanUser !== null) {
             printSuratJalan(order, {
                 namaToko: "Pinarak Langgeng Baru",
@@ -45,23 +32,9 @@ function OrderListView({ orders, onRefreshOrder }) {
         }
     };
 
-    const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
-    const [orderToPrint, setOrderToPrint] = useState(null);
-
-    const initiatePrint = (order) => {
-        setOrderToPrint(order);
-        setIsPrintModalOpen(true);
-    };
-
-    const executePrint = (config) => {
-        printSuratJalan(orderToPrint, config);
-        setIsPrintModalOpen(false);
-    };
-
     const handleStatusChange = async (id, newStatus) => {
         try {
             await orderService.updateStatusOrder(id, newStatus);
-            // Panggil fungsi refresh list biar UI update otomatis
             onRefreshOrder();
             alert("Status berhasil diperbarui!");
         } catch (err) {
@@ -70,7 +43,7 @@ function OrderListView({ orders, onRefreshOrder }) {
     };
 
     const handleDeleteClick = async (id, name) => {
-        const konfirmasi = window.confirm(`Apakah lu yakin mau menghapus transaksi atas nama "${name}"? Semua detail item belanjaan juga bakal ikut kehapus permanen, cuy.`);
+        const konfirmasi = window.confirm(`Apakah lu yakin mau menghapus transaksi atas nama "${name}"? Semua detail item belanjaan juga bakal ikut kehapus permanen.`);
         if (!konfirmasi) return;
 
         setDeletingId(id);
@@ -86,7 +59,7 @@ function OrderListView({ orders, onRefreshOrder }) {
         }
     };
 
-    // 🍏 LOGIKA FILTER BERDASARKAN TAB
+    // Filter berdasarkan Tab
     const filteredOrders = orders.filter(order => {
         if (activeTab === 'ongoing') return order.statusOrder !== 'Pengiriman';
         if (activeTab === 'selesai') return order.statusOrder === 'Pengiriman';
@@ -100,35 +73,17 @@ function OrderListView({ orders, onRefreshOrder }) {
                 <p>Seluruh riwayat pesanan pelanggan yang masuk ke Pinarak Langgeng.</p>
             </div>
 
-            {/* 🍏 UI UNTUK TOMBOL TAB */}
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+            {/* TAB BUTTONS */}
+            <div className="tab-container">
                 <button 
                     onClick={() => setActiveTab('ongoing')}
-                    style={{ 
-                        padding: '10px 20px', 
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        color: 'white',
-                        backgroundColor: activeTab === 'ongoing' ? '#4f46e5' : '#9ca3af',
-                        transition: 'background-color 0.3s'
-                    }}
+                    className={`btn-tab ongoing ${activeTab === 'ongoing' ? 'active' : 'inactive'}`}
                 >
                     ⏳ Ongoing ({orders.filter(o => o.statusOrder !== 'Pengiriman').length})
                 </button>
                 <button 
                     onClick={() => setActiveTab('selesai')}
-                    style={{ 
-                        padding: '10px 20px', 
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        color: 'white',
-                        backgroundColor: activeTab === 'selesai' ? '#10b981' : '#9ca3af',
-                        transition: 'background-color 0.3s'
-                    }}
+                    className={`btn-tab selesai ${activeTab === 'selesai' ? 'active' : 'inactive'}`}
                 >
                     ✅ Selesai ({orders.filter(o => o.statusOrder === 'Pengiriman').length})
                 </button>
@@ -146,7 +101,6 @@ function OrderListView({ orders, onRefreshOrder }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* 🍏 GANTI orders.length JADI filteredOrders.length */}
                         {filteredOrders.length === 0 ? (
                             <tr>
                                 <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
@@ -154,7 +108,6 @@ function OrderListView({ orders, onRefreshOrder }) {
                                 </td>
                             </tr>
                         ) : (
-                            // 🍏 GANTI orders.map JADI filteredOrders.map
                             filteredOrders.map((order) => (
                                 <tr key={order.id}>
                                     <td><strong>{order.pemesan}</strong></td>
@@ -166,9 +119,6 @@ function OrderListView({ orders, onRefreshOrder }) {
                                             onChange={(e) => handleStatusChange(order.id, e.target.value)}
                                             className="status-dropdown-premium"
                                             disabled={order.statusOrder === "Pengiriman"}
-                                            style={{
-                                                cursor: order.statusOrder === "Pengiriman" ? 'not-allowed' : 'pointer'
-                                            }}
                                         >
                                             <option value="Order Baru">Order Baru</option>
                                             <option value="Konfirmasi">Konfirmasi</option>
@@ -178,30 +128,18 @@ function OrderListView({ orders, onRefreshOrder }) {
                                     <td className="action-container-premium">
                                         <button
                                             onClick={() => handlePrintSuratJalan(order)}
-                                            className="btn-premium-info" // Lu bisa ganti class sesuai warna yang lu mau
-                                            disabled={order.statusOrder !== "Pengiriman"} // 🔒 KUNCI DI SINI
-                                            style={{
-                                                marginLeft: '8px',
-                                                backgroundColor: order.statusOrder === "Pengiriman" ? '#10b981' : '#4b5563', // Hijau kalau aktif, abu kalau mati
-                                                cursor: order.statusOrder === "Pengiriman" ? 'pointer' : 'not-allowed'
-                                            }}
+                                            className={`btn-premium-info btn-surat-jalan ${order.statusOrder === "Pengiriman" ? 'active' : ''}`}
+                                            disabled={order.statusOrder !== "Pengiriman"}
                                         >
                                             🚚 Surat Jalan
                                         </button>
-                                        <button onClick={() => handleViewClick(order)} className="btn-premium-info" style={{ marginLeft: '8px' }}>
+                                        <button onClick={() => handleViewClick(order)} className="btn-premium-info">
                                             👁️ View
                                         </button>
                                         <button
                                             onClick={() => handleDeleteClick(order.id, order.pemesan)}
-                                            // 🔒 Tombol hapus jadi disable jika status sudah 'Pengiriman'
                                             disabled={deletingId === order.id || order.statusOrder === "Pengiriman"}
-                                            className="btn-premium-danger"
-                                            style={{
-                                                marginLeft: '8px',
-                                                // Opsional: kasih indikator visual kalau tombolnya mati
-                                                opacity: order.statusOrder === "Pengiriman" ? 0.5 : 1,
-                                                cursor: order.statusOrder === "Pengiriman" ? 'not-allowed' : 'pointer'
-                                            }}
+                                            className="btn-premium-danger btn-delete-order"
                                         >
                                             {deletingId === order.id ? "⏳..." : "🗑️ Hapus"}
                                         </button>

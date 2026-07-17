@@ -1,16 +1,35 @@
-/* src/css/OrderList.css */
+/* ==========================================================================
+   1. TABLE & DROPDOWN STYLES (BASE COMPONENTS)
+   ========================================================================== */
 
+/* Cell tabel biar rata tengah secara vertikal dan memiliki padding yang rapi */
+.crud-table-premium th {
+    padding: 12px 15px;
+}
+
+.crud-table-premium td {
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+/* Dropdown Status Premium (Theme Gelap) */
 .status-dropdown-premium {
-    padding: 4px 8px;
+    width: 100%;
+    max-width: 140px;
+    padding: 6px 8px;
     border-radius: 4px;
     font-size: 12px;
-    width: 120px;
-    border: 1px solid #374151; /* Sesuaikan dengan theme gelap lu */
+    border: 1px solid #374151;
     background-color: #1f2937;
     color: #f3f4f6;
     cursor: pointer;
 }
 
+.status-dropdown-premium:disabled {
+    cursor: not-allowed;
+}
+
+/* Container tombol Aksi biar sejajar horizontal */
 .action-container-premium {
     display: flex;
     justify-content: center;
@@ -18,42 +37,130 @@
     white-space: nowrap;
 }
 
-/* Biar tabel lebih rapi kalau ada kolom baru */
-.crud-table-premium td, .crud-table-premium th {
-    padding: 12px 15px;
+.action-container-premium button {
+    margin-left: 8px;
 }
 
-/* src/css/OrderList.css */
 
-/* Biar semua isi cell tabel rata tengah secara vertikal */
-.crud-table-premium td {
-    vertical-align: middle;
-    padding: 10px 12px;
-}
-
-/* Styling Dropdown Status */
-.status-dropdown-premium {
-    padding: 6px;
-    border-radius: 4px;
-    width: 100%;
-    max-width: 140px;
-    background-color: #1f2937;
-    color: #f3f4f6;
-    border: 1px solid #374151;
-}
-
-/* Container tombol Aksi biar sejajar */
-.action-container-premium {
+/* ==========================================================================
+   2. NAVIGATION TABS
+   ========================================================================== */
+.tab-container {
+    margin-bottom: 20px;
     display: flex;
-    justify-content: center;
-    gap: 5px;
-    white-space: nowrap;
+    gap: 10px;
 }
 
-/* src/css/OrderList.css */
+.btn-tab {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: white;
+    transition: background-color 0.3s;
+}
 
+.btn-tab.ongoing.active { background-color: #4f46e5; }
+.btn-tab.selesai.active { background-color: #10b981; }
+.btn-tab.inactive { background-color: #9ca3af; }
+
+
+/* ==========================================================================
+   3. BUTTON STATES & VARIANTS
+   ========================================================================== */
 .btn-premium-info:disabled {
     opacity: 0.5;
     cursor: not-allowed !important;
     background-color: #6b7280 !important;
+}
+
+.btn-surat-jalan {
+    color: white;
+}
+
+.btn-surat-jalan.active { 
+    background-color: #10b981;
+    cursor: pointer;
+}
+
+.btn-surat-jalan:disabled { 
+    background-color: #4b5563;
+    cursor: not-allowed;
+}
+
+.btn-delete-order {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.btn-delete-order:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ==========================================================================
+   4. ORDER DETAIL VIEW
+   ========================================================================== */
+.order-detail-loading {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.order-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.order-info-label {
+    font-size: 12px;
+    color: #888;
+    font-weight: bold;
+}
+
+.order-info-value-bold {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+.order-info-value {
+    font-size: 14px;
+    color: #444;
+}
+
+.order-address-box {
+    background: #f8fafc;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    min-height: 40px;
+}
+
+
+/* ==========================================================================
+   5. SUMMARY BOX
+   ========================================================================== */
+.order-summary-box {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed #ccc;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.order-summary-text {
+    font-size: 14px;
+    color: #666;
+    font-weight: bold;
 }

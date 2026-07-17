@@ -3,7 +3,7 @@ package com.example.cmsbackend.controller;
 import com.example.cmsbackend.model.Invoice;
 import com.example.cmsbackend.repository.InvoiceRepository;
 import com.example.cmsbackend.repository.TransaksiRepository;
-import jakarta.transaction.Transactional;
+// import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

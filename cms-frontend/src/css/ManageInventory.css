@@ -1,0 +1,33 @@
+/* Pagination Styling (menggantikan inline style) */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding-bottom: 10px;
+}
+
+.btn-pagination {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.btn-pagination:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.page-info {
+  font-weight: bold;
+  color: #333;
+}
+
+/* Helper Class */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-green { color: #34c759; }
+.font-bold { font-weight: bold; }
+.p-20 { padding: 20px; }

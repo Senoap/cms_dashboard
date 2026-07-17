@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.cmsbackend.model.Transaksi;
-import com.example.cmsbackend.repository.TransaksiRepository;
+// import com.example.cmsbackend.model.Transaksi;
+// import com.example.cmsbackend.repository.TransaksiRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ public class OrderController {
     @Autowired
     private BarangRepository barangRepository;
 
-    @Autowired
-    private TransaksiRepository transaksiRepository;
+    // @Autowired
+    // private TransaksiRepository transaksiRepository;
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrder() {

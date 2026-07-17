@@ -1,3 +1,6 @@
+import React from 'react';
+import '../css/OrderList.css';
+
 function OrderDetail({ orderData, onBack }) {
   if (!orderData) {
     return (
@@ -49,9 +52,9 @@ function OrderDetail({ orderData, onBack }) {
             <div className="order-info-value">{orderData.noHpPemesan || '-'}</div>
           </div>
 
-          <div style={{ gridColumn: 'span 2', marginTop: '10px' }}>
+          <div style={{ gridColumn: 'span 2' }}>
             <label className="order-info-label">Alamat Pengiriman / Lokasi Acara</label>
-            <div className="order-info-value" style={{ background: '#f8fafc', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0', minHeight: '40px' }}>
+            <div className="order-info-value order-address-box">
               {orderData.alamat || 'Tidak ada alamat pengiriman tercatat.'}
             </div>
           </div>
@@ -101,7 +104,7 @@ function OrderDetail({ orderData, onBack }) {
         <div className="order-summary-box">
           <div style={{ textAlign: 'right' }}>
             <span className="order-summary-text">Total Keseluruhan:</span>
-            <h2 style={{ color: '#16a34a', fontWeight: 'bold' }}>
+            <h2 style={{ color: '#16a34a', fontWeight: 'bold', marginTop: '5px' }}>
               Rp {(orderData.harga || 0).toLocaleString('id-ID')}
             </h2>
           </div>

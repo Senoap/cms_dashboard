@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { orderService } from '../services/orderService';
 import '../css/OrderModal.css';
 
@@ -91,16 +91,13 @@ function OrderDetailModal({ isOpen, onClose, orderData, onUpdateOrder }) {
           <thead>
             <tr>
               <th>Nama Barang</th>
-              {/* <th>Harga</th> */}
               <th>Qty</th>
-              {/* <th>Subtotal</th> */}
             </tr>
           </thead>
           <tbody>
             {editForm.details.map((item, index) => (
               <tr key={index}>
                 <td>{item.barang?.nmBarang || 'Barang Terhapus'}</td>
-                {/* <td>Rp {(item.barang?.harga || 0).toLocaleString('id-ID')}</td> */}
                 <td>
                   {isEditing ? (
                     <input type="number" value={item.jumlah} onChange={(e) => handleDetailChange(index, 'jumlah', e.target.value)} className="qty-input" />
@@ -108,7 +105,6 @@ function OrderDetailModal({ isOpen, onClose, orderData, onUpdateOrder }) {
                     `${item.jumlah} pcs`
                   )}
                 </td>
-                {/* <td>Rp {(item.subTotal || 0).toLocaleString('id-ID')}</td> */}
               </tr>
             ))}
           </tbody>
