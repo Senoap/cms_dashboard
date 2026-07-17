@@ -35,8 +35,8 @@ function TransactionList() {
                     <table className="crud-table-premium">
                         <thead>
                             <tr>
-                                <th>ID Transaksi</th>
-                                <th>Ref Order</th>
+                                <th>No Invoice</th>
+                                <th>Pemesan</th>
                                 <th>Tanggal Lunas</th>
                                 <th style={{ textAlign: 'right' }}>Total Pendapatan</th>
                             </tr>
@@ -45,13 +45,12 @@ function TransactionList() {
                             {transaksi.length > 0 ? (
                                 transaksi.map((item, index) => (
                                     <tr key={item.id || index}>
-                                        <td>TXN-{item.id}</td>
-                                        {/* Ganti item.order?.id menjadi item.order_id */}
-                                        <td>ORD-#{item.order_id || '-'}</td>
+                                        <td>{item.noInvoice || '-'}</td>
+                                        <td>{item.pemesan || '-'}</td>
                                         <td>{item.tanggal || '-'}</td>
                                         <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#16a34a' }}>
                                             {/* Ganti item.total (kalau masih 0, pakai item.total juga) */}
-                                            Rp {item.total ? item.total.toLocaleString('id-ID') : 0}
+                                            Rp {item.harga ? item.harga.toLocaleString('id-ID') : 0}
                                         </td>
                                     </tr>
                                 ))
@@ -65,7 +64,7 @@ function TransactionList() {
                             <tr style={{ borderTop: '2px solid #ddd' }}>
                                 <td colSpan="3" style={{ textAlign: 'right', fontWeight: 'bold', padding: '15px' }}>Total Keseluruhan:</td>
                                 <td style={{ textAlign: 'right', fontWeight: 'bold', padding: '15px', color: '#16a34a' }}>
-                                    Rp {transaksi.reduce((sum, item) => sum + (item.total || 0), 0).toLocaleString('id-ID')}
+                                    Rp {transaksi.reduce((sum, item) => sum + (item.harga || 0), 0).toLocaleString('id-ID')}
                                 </td>
                             </tr>
                         </tfoot>
