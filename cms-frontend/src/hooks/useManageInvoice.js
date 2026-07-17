@@ -7,7 +7,9 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
   const [tanggalInvoice, setTanggalInvoice] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [loading, setLoading] = useState(false);
-  
+  // const [activeTab, setActiveTab] = useState('ongoing');
+
+
   // 🍏 State baru buat filter Tab
   const [activeInvoiceTab, setActiveInvoiceTab] = useState('Semua');
 
@@ -26,8 +28,14 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
 
   // 🍏 Logika Filter: Filter invoice berdasarkan status
   const filteredInvoices = invoices.filter(item => {
-    if (activeInvoiceTab === 'Terbayarkan') return item.statusPenagihan === 'Terbayarkan';
-    return true; // Untuk tab 'Semua'
+    // Kalau tab-nya 'Terbayarkan', tampilkan yang 'Terbayarkan' saja
+    if (activeInvoiceTab === 'Terbayarkan') {
+      return item.statusPenagihan === 'Terbayarkan';
+    }
+
+    // Kalau tab-nya bukan 'Terbayarkan' (berarti 'Ongoing'), 
+    // tampilkan yang BUKAN 'Terbayarkan'
+    return item.statusPenagihan !== 'Terbayarkan';
   });
 
   useEffect(() => {
@@ -136,6 +144,6 @@ export function useManageInvoice(invoices, onRefreshInvoice, templateConfig, set
     addNoteField, removeNoteField, handleSaveTemplate, handleCreateInvoice,
     handlePrint, formatInvoiceNumber, handleUpdateStatusPenagihan,
     // 🍏 Export state dan data filter baru
-    activeInvoiceTab, setActiveInvoiceTab, filteredInvoices 
+    activeInvoiceTab, setActiveInvoiceTab, filteredInvoices
   };
 }

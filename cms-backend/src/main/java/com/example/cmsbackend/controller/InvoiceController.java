@@ -57,6 +57,8 @@ public class InvoiceController {
                 // Ambil data noInvoice dari entitas Invoice
                 transaksiBaru.setNoInvoice(invoice.getNoInvoice());
 
+                transaksiBaru.setTglInvoice(invoice.getTanggalInvoice());
+
                 // Ambil data harga dan pemesan dari relasi Order
                 if (invoice.getOrder() != null) {
                     transaksiBaru.setHarga(Double.valueOf(invoice.getOrder().getHarga()));

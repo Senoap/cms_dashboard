@@ -4,6 +4,8 @@ import api from '../services/api'; // Sesuaikan path ini dengan project lu
 function TransactionList() {
     const [transaksi, setTransaksi] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('ongoing');
+
 
     // Fetch data transaksi dari backend
     useEffect(() => {
@@ -37,7 +39,7 @@ function TransactionList() {
                             <tr>
                                 <th>No Invoice</th>
                                 <th>Pemesan</th>
-                                <th>Tanggal Lunas</th>
+                                <th>Tanggal Invoice</th>
                                 <th style={{ textAlign: 'right' }}>Total Pendapatan</th>
                             </tr>
                         </thead>
@@ -47,7 +49,7 @@ function TransactionList() {
                                     <tr key={item.id || index}>
                                         <td>{item.noInvoice || '-'}</td>
                                         <td>{item.pemesan || '-'}</td>
-                                        <td>{item.tanggal || '-'}</td>
+                                        <td>{item.tglInvoice || '-'}</td>
                                         <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#16a34a' }}>
                                             {/* Ganti item.total (kalau masih 0, pakai item.total juga) */}
                                             Rp {item.harga ? item.harga.toLocaleString('id-ID') : 0}

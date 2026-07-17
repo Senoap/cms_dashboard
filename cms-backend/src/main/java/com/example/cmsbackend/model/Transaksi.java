@@ -2,6 +2,8 @@ package com.example.cmsbackend.model; // Sesuaikan dengan nama package lu
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "tbl_transaksi")
 public class Transaksi {
@@ -19,6 +21,9 @@ public class Transaksi {
     @Column(name = "pemesan")
     private String pemesan;
 
+    @Column(name = "tanggal_invoice")
+    private LocalDate tglInvoice;
+
     // Default Constructor
     public Transaksi() {}
 
@@ -34,4 +39,7 @@ public class Transaksi {
 
     public String getPemesan() { return pemesan; }
     public void setPemesan(String pemesan) { this.pemesan = pemesan; }
+
+    public LocalDate getTglInvoice() { return tglInvoice;}
+    public  void setTglInvoice(LocalDate tglInvoice) { this.tglInvoice = tglInvoice; }
 }
